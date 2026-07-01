@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Dashboard - ServeIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color-1: #0A0E17;
+            --bg-color-2: #0E1A35;
+            --bg-color-3: #000000;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --glass-bg: rgba(10, 14, 23, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --bright-green: #10B981;
+            --mid-green: #059669;
+            --bright-red: #EF4444;
+            --mid-red: #DC2626;
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --input-border: rgba(255, 255, 255, 0.1);
+        }
+
+        .light-theme {
+            --bg-color-1: #F0F9FF;
+            --bg-color-2: #E0F2FE;
+            --bg-color-3: #BAE6FD;
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(255, 255, 255, 0.5);
+            --input-border: rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-color-1);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--bright-green);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--bright-green);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s;
+            appearance: none;
+            cursor: pointer;
+        }
+        select option {
+            background: var(--bg-color-2);
+            color: var(--text-main);
+        }
+
+        .btn {
+            background: var(--bright-green);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--mid-green);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--bright-green);
+            color: var(--bright-green);
+        }
+
+        .btn-outline:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .btn-offline-outline {
+            background: transparent;
+            border: 1px solid var(--bright-red);
+            color: var(--bright-red);
+        }
+
+        .btn-offline-outline:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Request Cards */
+        .request-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--input-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .req-info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .req-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .req-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-accept {
+            background: var(--bright-green);
+            padding: 10px 20px;
+        }
+
+        .btn-reject {
+            background: var(--bright-red);
+            padding: 10px 20px;
+        }
+
+        .btn-reject:hover {
+            background: var(--mid-red);
+        }
+
+        .nav-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+
+        /* Dropdown Menu CSS */
+        .dropdown-container { position: relative; }
+        .menu-btn { background: transparent; border: none; color: var(--text-main); cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.3s ease; display: flex; align-items: center; justify-content: center; }
+        .menu-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .menu-btn svg { width: 24px; height: 24px; fill: currentColor; }
+        .dropdown-menu { position: absolute; right: 0; top: calc(100% + 10px); background: rgba(10, 14, 23, 0.95); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 12px; width: 240px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; opacity: 0; transform: translateY(-10px); pointer-events: none; transition: all 0.3s ease; z-index: 200; }
+        .dropdown-menu.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .dropdown-item { padding: 14px 20px; color: var(--text-main); text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: background 0.2s ease; cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; }
+        .dropdown-item:first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
+        .dropdown-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-top: 1px solid var(--glass-border); }
+        .dropdown-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .dropdown-item.logout { color: var(--bright-red); }
+        .dropdown-item.logout:hover { background: rgba(239, 68, 68, 0.1); }
+        .dropdown-item svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: var(--bg-color-2); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-content h3 { margin-bottom: 20px; font-size: 24px; color: var(--text-main); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+        .modal-btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); }
+        .btn-cancel:hover { background: rgba(255,255,255,0.05); }
+
+        /* Toggle Switch for Theme */
+        .theme-toggle-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--text-muted); transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--bright-green); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* View Section Toggling */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        /* Profile Styles */
+        .profile-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        .profile-photo-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .profile-photo {
+            width: 150px; height: 150px; border-radius: 50%;
+            background: var(--hover-bg);
+            border: 2px dashed var(--glass-border);
+            display: flex; justify-content: center; align-items: center;
+            color: var(--text-muted); font-size: 14px; text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-photo:hover { border-color: var(--bright-green); color: var(--bright-green); cursor: pointer; }
+        .upload-btn {
+            background: var(--hover-bg); border: 1px solid var(--glass-border);
+            padding: 8px 16px; border-radius: 8px; color: var(--text-main);
+            font-size: 13px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .upload-btn:hover { background: var(--bright-green); border-color: var(--bright-green); color: white;}
+        .profile-details { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .detail-group { display: flex; flex-direction: column; gap: 6px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border); text-align: left; }
+        .detail-group:last-child { border-bottom: none; padding-bottom: 0; }
+        .detail-label { color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .detail-value { font-size: 16px; font-weight: 500; color: var(--text-main); }
+        .userid-badge {
+            display: inline-block; background: rgba(16, 185, 129, 0.1); color: var(--bright-green);
+            padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 700;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+        .back-btn:hover { color: var(--bright-green); }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            .profile-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+                gap: 20px;
+            }
+            .profile-details {
+                width: 100%;
+            }
+            .detail-group {
+                align-items: center;
+                width: 100%;
+            }
+            .modal-content {
+                width: 90% !important;
+                padding: 20px !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .request-card {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+                text-align: left;
+            }
+            .req-actions {
+                justify-content: stretch;
+                width: 100%;
+            }
+            .req-actions .btn {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            .header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Provider Dashboard</h1>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <!-- Removed customer mode button outside 3 dots -->
+            
+            <div class="dropdown-container">
+                <button class="menu-btn" id="menuBtn" title="Menu">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="5" r="2"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <circle cx="12" cy="19" r="2"></circle>
+                    </svg>
+                </button>
+                
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item" id="profileMenuBtn">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span id="menuUserName">My Profile</span>
+                    </a>
+
+                    <!-- Notifications -->
+                    <a href="#" class="dropdown-item" id="notifMenuBtn" style="position: relative;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        Notifications
+                        <span id="notifBadge" style="display: none; position: absolute; right: 20px; background: var(--error-color); color: white; border-radius: 50%; font-size: 10px; font-weight: 700; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; line-height: 1;">0</span>
+                    </a>
+
+                    <!-- Settings / Theme Toggle -->
+                    <div class="dropdown-item">
+                        <div class="theme-toggle-container">
+                            <span style="display: flex; align-items: center; gap: 12px;">
+                                <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                                Dark Theme
+                            </span>
+                            <label class="switch">
+                                <input type="checkbox" id="themeToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="dropdown-item" id="settingsMenuBtn">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        Settings
+                    </a>
+
+                    <a href="#" class="dropdown-item" id="customerModeLink">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        Customer Mode
+                    </a>
+
+                    <button class="dropdown-item logout" id="logoutBtn">
+                        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View 1: Main Dashboard Section -->
+    <div class="view-section active" id="dashboardSection">
+        <div class="container">
+            <!-- My Registered Service Details Card -->
+            <div class="card">
+                <h2>My Registered Service</h2>
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Category</span>
+                        <span id="registeredServiceCategory" style="font-size: 18px; font-weight: 600; color: var(--text-main);">Loading...</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Status</span>
+                        <span id="registeredServiceStatus" style="font-size: 14px; font-weight: 700;">Loading...</span>
+                    </div>
+
+                    <!-- Offer Section: shown only when service is INACTIVE -->
+                    <div id="offerSection" style="display: none; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 16px; margin-top: 5px;">
+                        <p style="color: var(--bright-green); font-size: 13px; font-weight: 600; margin-bottom: 12px;">
+                            📢 Offer your service and set your price to start receiving customer requests.
+                        </p>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="offerRate" min="1" placeholder="Enter hourly rate (Rs.)"
+                                style="flex: 1; padding: 10px 14px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--text-main); outline: none; font-size: 14px;">
+                            <button onclick="offerService()" style="padding: 10px 18px; border-radius: 8px; border: none; background: var(--bright-green); color: white; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap;" id="offerBtn">
+                                Offer Service
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="goOfflineBtn" class="btn btn-offline-outline" onclick="goOffline()" style="display: none; margin-top: 5px;">Go Offline</button>
+                </div>
+            </div>
+
+            <!-- Pending Requests Card -->
+            <div class="card">
+                <h2>Incoming Booking Requests</h2>
+                <div id="requestsList" style="margin-top: 15px;">
+                    <p style="color: var(--text-muted);">No pending requests at the moment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View 2: Profile Section -->
+    <div class="view-section" id="profileSection" style="max-width: 800px; margin: 0 auto; display: none;">
+        <button class="back-btn" onclick="showSection('dashboardSection')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 20px; height: 20px; stroke-width: 2;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+            Back to Dashboard
+        </button>
+        
+        <div class="profile-card" style="margin-top: 15px;">
+            <div class="profile-photo-container">
+                <div class="profile-photo" id="profilePhoto" title="Click to change photo" onclick="document.getElementById('profilePicInput').click()">
+                    <span>No Photo<br>Uploaded</span>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%;">
+                    <button class="upload-btn" id="uploadBtn" onclick="document.getElementById('profilePicInput').click()" style="width: auto; flex: 1;">Upload Photo</button>
+                    <button class="upload-btn" id="removePicBtn" onclick="removeProfilePic()" style="display: none; background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: var(--bright-red); width: auto; flex: 1;">Remove Photo</button>
+                </div>
+                <input type="file" id="profilePicInput" style="display: none;" accept="image/*">
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-group">
+                    <span class="detail-label">Full Name</span>
+                    <span class="detail-value" id="profName">Loading...</span>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">System User ID</span>
+                    <span class="detail-value"><span class="userid-badge" id="profId">...</span></span>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Email Address</span>
+                    <span class="detail-value" id="profEmail">Loading...</span>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">Phone Number</span>
+                    <span class="detail-value" id="profPhone">Loading...</span>
+                </div>
+                <div class="detail-group">
+                    <span class="detail-label">My Specialty Service</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span class="detail-value" id="profSpecialty">Loading...</span>
+                        <button class="btn btn-outline" onclick="openShiftServiceModal()" style="width: auto; padding: 6px 12px; font-size: 13px;">Shift Service</button>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; margin-top: 5px; width: 100%;">
+                    <div id="servicesProvidedContainer" style="flex: 1; background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.1); cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 6px;" onmouseover="this.style.background='rgba(16, 185, 129, 0.1)'" onmouseout="this.style.background='rgba(16, 185, 129, 0.05)'">
+                        <span class="detail-label" style="color: var(--bright-green); display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                            Services Provided
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="stroke: var(--bright-green);"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </span>
+                        <span class="detail-value" id="profServicesProvided" style="font-size: 24px; font-weight: 700; color: var(--text-main);">...</span>
+                    </div>
+                    <div class="detail-group" style="flex: 1; background: rgba(245, 158, 11, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.1);">
+                        <span class="detail-label" style="color: #F59E0B;">My Rating</span>
+                        <span class="detail-value" id="profRating" style="font-size: 24px; font-weight: 700; color: var(--text-main);">...</span>
+                    </div>
+                </div>
+                <button class="btn btn-outline" onclick="openMyReviews()" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 16px; height: 16px; stroke-width: 2;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    View My Reviews
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <h3>Settings</h3>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+                <h4 style="color: var(--text-main); margin-bottom: 10px;">Profile Settings</h4>
+                <button class="modal-btn" id="editProfileBtn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main); width: 100%; margin-bottom: 10px;">Edit Profile</button>
+                <button class="modal-btn" id="changePasswordBtn" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main); width: 100%; margin-bottom: 20px;">Change Password</button>
+                
+                <h4 style="color: var(--bright-red); margin-bottom: 10px;">Danger Zone</h4>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Permanently delete your account and all data.</p>
+                <button class="modal-btn" style="background: transparent; border: 1px solid var(--bright-red); color: var(--bright-red); width: 100%;" onclick="openDeleteModal()">Delete Account</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="document.getElementById('settingsModal').classList.remove('active')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-content">
+            <h3>Edit Profile</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Update your name and phone number.</p>
+            <div class="form-group" style="text-align: left; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <label>Full Name</label>
+                <input type="text" id="editFullName" placeholder="Enter your full name">
+            </div>
+            <div class="form-group" style="text-align: left; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <label>Phone Number</label>
+                <input type="text" id="editPhone" placeholder="Enter your phone number">
+            </div>
+            <p id="editProfileError" style="color: var(--bright-red); margin-top: 10px; display: none; font-size: 14px; text-align: left;"></p>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="document.getElementById('editProfileModal').classList.remove('active')">Cancel</button>
+                <button class="modal-btn btn-confirm" id="confirmEditProfileBtn" style="background: var(--bright-green); color: white; border: none;">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="changePasswordModal">
+        <div class="modal-content">
+            <h3>Change Password</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">Update your account password safely.</p>
+            <div class="form-group" style="text-align: left; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <label>Current Password</label>
+                <input type="password" id="currentPassword" placeholder="Enter current password">
+            </div>
+            <div class="form-group" style="text-align: left; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <label>New Password</label>
+                <input type="password" id="newPassword" placeholder="Minimum 8 characters">
+            </div>
+            <div class="form-group" style="text-align: left; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" placeholder="Re-enter new password">
+            </div>
+            <p id="changePasswordError" style="color: var(--bright-red); margin-top: 10px; display: none; font-size: 14px; text-align: left;"></p>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="document.getElementById('changePasswordModal').classList.remove('active')">Cancel</button>
+                <button class="modal-btn btn-confirm" id="confirmChangePasswordBtn" style="background: var(--bright-green); color: white; border: none;">Change Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div class="modal-overlay" id="notifModal">
+        <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 6px; display: flex; align-items: center; gap: 10px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--bright-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                Notifications
+            </h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Stay updated on your booking requests and account activity.</p>
+            <div id="notifList" style="display: flex; flex-direction: column; gap: 12px;">
+                <p style="color: var(--text-muted);">Loading notifications...</p>
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="document.getElementById('notifModal').classList.remove('active')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider History Modal -->
+    <div class="modal-overlay" id="providerHistoryModal">
+        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 6px; display: flex; align-items: center; gap: 10px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--bright-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Services Provided History
+            </h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Detailed history of all completed services you have delivered.</p>
+            <div id="providerHistoryList" style="display: flex; flex-direction: column; gap: 15px;">
+                <p style="color: var(--text-muted);">Loading history...</p>
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="document.getElementById('providerHistoryModal').classList.remove('active')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal-overlay" id="deleteAccountModal">
+        <div class="modal-content">
+            <h3 style="color: var(--bright-red);">Delete Account</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">This action cannot be undone. Please enter your password to confirm.</p>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="deletePassword" placeholder="Enter your password">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="document.getElementById('deleteAccountModal').classList.remove('active')">Cancel</button>
+                <button class="modal-btn" style="background: var(--bright-red); color: white; border: none;" id="confirmDeleteBtn">Delete Permanently</button>
+            </div>
+            <p id="deleteMessage" style="color: var(--bright-red); margin-top: 15px; display: none; font-size: 14px;"></p>
+        </div>
+    </div>
+
+    <!-- Shift Service Modal -->
+    <div class="modal-overlay" id="shiftServiceModal">
+        <div class="modal-content">
+            <h3>Shift Specialty Service</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">
+                Update your specialty service category and your desired hourly rate.
+            </p>
+            
+            <div class="form-group" style="text-align: left; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase;">Service Category</label>
+                <select id="shiftServiceName" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main); outline: none;">
+                    <option value="Plumber">Plumber</option>
+                    <option value="Electrician">Electrician</option>
+                    <option value="Home Cleaner">Home Cleaner</option>
+                    <option value="Gardener">Gardener</option>
+                    <option value="Carpenter">Carpenter</option>
+                    <option value="Painter">Painter</option>
+                    <option value="AC Repair">AC Repair</option>
+                    <option value="Mechanic">Mechanic</option>
+                    <option value="Mason">Mason</option>
+                    <option value="Pest Control">Pest Control</option>
+                </select>
+            </div>
+            
+            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="closeShiftServiceModal()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-muted); cursor: pointer;">Cancel</button>
+                <button class="modal-btn btn-confirm" id="confirmShiftServiceBtn" style="padding: 10px 20px; border-radius: 8px; border: none; background: var(--bright-green); color: white; cursor: pointer; font-weight: 600;">Confirm Shift</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Reviews Modal -->
+    <div class="modal-overlay" id="myReviewsModal">
+        <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 6px;">My Reviews</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Reviews left by customers for your services.</p>
+            <div id="myReviewsList">
+                <p style="color: var(--text-muted);">Loading reviews...</p>
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="document.getElementById('myReviewsModal').classList.remove('active')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Switch Mode Password Modal -->
+    <div class="modal-overlay" id="switchModePasswordModal">
+        <div class="modal-content">
+            <h3 style="color: var(--bright-green); display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; stroke: var(--bright-green);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Security Verification
+            </h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px; text-align: left; line-height: 1.4;">
+                For security purposes, please enter your password to switch to Customer Mode.
+            </p>
+            <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+                <label style="color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase;">Account Password</label>
+                <div style="position: relative;">
+                    <input type="password" id="switchModePassword" placeholder="Enter your password" style="width: 100%; padding: 12px; border-radius: 10px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-main); outline: none;">
+                    <span id="toggleSwitchPassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); display: flex; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <p id="switchModeError" style="color: var(--bright-red); margin-bottom: 15px; display: none; font-size: 13px; text-align: left;"></p>
+            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button class="modal-btn btn-cancel" onclick="closeSwitchModeModal()" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-muted); cursor: pointer;">Cancel</button>
+                <button class="modal-btn btn-confirm" id="confirmSwitchModeBtn" style="padding: 10px 20px; border-radius: 8px; border: none; background: var(--bright-green); color: white; cursor: pointer; font-weight: 600;">Verify & Switch</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.port === '3000' ? '/api' : 'http://localhost:3000/api';
+        const token = localStorage.getItem('servein_token') || localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+            themeToggle.checked = false;
+        }
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // View Section Toggler
+        function showSection(sectionId) {
+            document.querySelectorAll('.view-section').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            const activeSec = document.getElementById(sectionId);
+            activeSec.classList.add('active');
+            activeSec.style.display = sectionId === 'profileSection' ? 'block' : 'block';
+        }
+
+        // Fetch profile data
+        async function fetchProfile() {
+            try {
+                const res = await fetch(`${API_URL}/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('profName').textContent = data.full_name;
+                    document.getElementById('menuUserName').textContent = data.full_name;
+                    document.getElementById('profId').textContent = data.id;
+                    document.getElementById('profEmail').textContent = data.email;
+                    
+                    let displayPhone = data.phone || '';
+                    if (displayPhone.toString().startsWith('3')) {
+                        displayPhone = '0' + displayPhone;
+                    }
+                    document.getElementById('profPhone').textContent = displayPhone;
+                    document.getElementById('profServicesProvided').textContent = data.services_provided || 0;
+
+                    // Rating display
+                    const rating = parseFloat(data.rating) || 0;
+                    const totalRatings = data.total_ratings || 0;
+                    const stars = [1,2,3,4,5].map(i =>
+                        `<span style="color:${i <= Math.round(rating) ? '#F59E0B' : 'var(--text-muted)'}; font-size:18px;">★</span>`
+                    ).join('');
+                    document.getElementById('profRating').innerHTML =
+                        `<span style="display:flex;align-items:center;gap:6px;margin-top:4px;">${stars}<span style="font-size:14px;color:var(--text-muted);">${rating.toFixed(1)} (${totalRatings})</span></span>`;
+                    // Store user id for reviews fetch
+                    window._myProviderId = data.id;
+                    
+                    if (data.profile_pic) {
+                        const baseUrl = window.location.port === '3000' ? '' : 'http://localhost:3000';
+                        document.getElementById('profilePhoto').innerHTML = `<img src="${baseUrl}${data.profile_pic}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                        document.getElementById('removePicBtn').style.display = 'inline-block';
+                        document.getElementById('uploadBtn').textContent = 'Update Photo';
+                    } else {
+                        const initials = data.full_name ? data.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'P';
+                        document.getElementById('profilePhoto').innerHTML = `
+                            <div class="default-avatar-placeholder" style="
+                                width: 100%; height: 100%; border-radius: 50%;
+                                background: linear-gradient(135deg, var(--bright-green), var(--mid-green));
+                                color: white; display: flex; align-items: center; justify-content: center;
+                                font-size: 36px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                            ">${initials}</div>
+                        `;
+                        document.getElementById('removePicBtn').style.display = 'none';
+                        document.getElementById('uploadBtn').textContent = 'Upload Photo';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Fetch single registered service offer
+        async function fetchMyRegisteredService() {
+            try {
+                const res = await fetch(`${API_URL}/services/provider`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const offers = await res.json();
+                    if (offers.length > 0) {
+                        const o = offers[0]; // Exactly one service
+                        document.getElementById('registeredServiceCategory').textContent = o.service_name;
+                        document.getElementById('profSpecialty').textContent = o.service_name;
+                        
+                        // Set shift modal defaults
+                        document.getElementById('shiftServiceName').value = o.service_name;
+
+                        const statusEl = document.getElementById('registeredServiceStatus');
+                        const offerSection = document.getElementById('offerSection');
+                        const goOfflineBtn = document.getElementById('goOfflineBtn');
+
+                        if (o.is_active) {
+                            statusEl.textContent = '● Online & Available for Bookings';
+                            statusEl.style.color = 'var(--bright-green)';
+                            offerSection.style.display = 'none';
+                            goOfflineBtn.style.display = 'block';
+                        } else {
+                            // Check if there's an active booking for this provider
+                            const activeRes = await fetch(`${API_URL}/bookings/active`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            if (activeRes.ok) {
+                                // Provider is in an active booking
+                                statusEl.textContent = '● Booked (Active job in progress)';
+                                statusEl.style.color = '#F59E0B';
+                                offerSection.style.display = 'none';
+                                goOfflineBtn.style.display = 'none';
+                            } else {
+                                // Inactive
+                                statusEl.textContent = '● Offline — Set rate and offer service to accept bookings';
+                                statusEl.style.color = 'var(--bright-red)';
+                                offerSection.style.display = 'block';
+                                goOfflineBtn.style.display = 'none';
+                                
+                                const offerRateInput = document.getElementById('offerRate');
+                                if (!offerRateInput.value) {
+                                    offerRateInput.placeholder = `Last rate: Rs. ${o.hourly_rate}/hr`;
+                                }
+                            }
+                        }
+                    } else {
+                        document.getElementById('registeredServiceCategory').textContent = 'None';
+                        document.getElementById('registeredServiceRate').textContent = '-';
+                        document.getElementById('profSpecialty').textContent = 'None';
+                        document.getElementById('offerSection').style.display = 'none';
+                        document.getElementById('goOfflineBtn').style.display = 'none';
+                        
+                        const statusEl = document.getElementById('registeredServiceStatus');
+                        statusEl.textContent = 'Not Registered';
+                        statusEl.style.color = 'var(--bright-red)';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Offer service with a custom rate (sets is_active = TRUE)
+        async function offerService() {
+            const rateInput = document.getElementById('offerRate');
+            const rate = rateInput.value.trim();
+            if (!rate || isNaN(rate) || parseInt(rate) < 1) {
+                rateInput.style.borderColor = 'var(--bright-red)';
+                rateInput.focus();
+                return;
+            }
+            rateInput.style.borderColor = 'rgba(255,255,255,0.1)';
+
+            const btn = document.getElementById('offerBtn');
+            btn.disabled = true;
+            btn.textContent = 'Offering...';
+
+            try {
+                const res = await fetch(`${API_URL}/provider/service/offer`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ hourlyRate: parseInt(rate) })
+                });
+
+                if (res.ok) {
+                    rateInput.value = '';
+                    fetchMyRegisteredService();
+                } else {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to offer service.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Offer Service';
+            }
+        }
+
+        // Take service offline (sets is_active = FALSE)
+        async function goOffline() {
+            const btn = document.getElementById('goOfflineBtn');
+            btn.disabled = true;
+            btn.textContent = 'Going Offline...';
+
+            try {
+                const res = await fetch(`${API_URL}/provider/service/offline`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    fetchMyRegisteredService();
+                } else {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to go offline.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Go Offline';
+            }
+        }
+
+
+        // Remove Profile Picture
+        async function removeProfilePic() {
+            try {
+                const res = await fetch(`${API_URL}/remove-profile-pic`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    fetchProfile();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to remove profile picture.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Profile Picture Upload Logic
+        document.getElementById('profilePicInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const uploadBtn = document.getElementById('uploadBtn');
+            const originalText = uploadBtn.textContent;
+            uploadBtn.innerHTML = `Uploading...`;
+            uploadBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('profile_pic', file);
+
+            try {
+                const res = await fetch(`${API_URL}/upload-profile-pic`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                
+                const data = await res.json();
+
+                if (res.ok) {
+                    fetchProfile();
+                } else {
+                    alert(data.error || 'Failed to upload photo');
+                }
+            } catch (err) {
+                alert('Network error. Please try again.');
+            } finally {
+                uploadBtn.textContent = originalText;
+                uploadBtn.disabled = false;
+            }
+        });
+
+        // Shift Service Modal functions
+        function openShiftServiceModal() {
+            document.getElementById('shiftServiceModal').classList.add('active');
+            dropdownMenu.classList.remove('active');
+        }
+
+        function closeShiftServiceModal() {
+            document.getElementById('shiftServiceModal').classList.remove('active');
+        }
+
+        document.getElementById('confirmShiftServiceBtn').addEventListener('click', async function() {
+            const serviceName = document.getElementById('shiftServiceName').value;
+            
+            if (!serviceName) {
+                alert("Please select a service category.");
+                return;
+            }
+            
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            
+            try {
+                const res = await fetch(`${API_URL}/provider/service`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ serviceName })
+                });
+                
+                if (res.ok) {
+                    closeShiftServiceModal();
+                    fetchMyRegisteredService();
+                } else {
+                    const errData = await res.json();
+                    alert(errData.error || 'Failed to update service.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Confirm Shift';
+            }
+        });
+
+        // Fetch Pending Requests
+        async function fetchRequests() {
+            try {
+                const res = await fetch(`${API_URL}/bookings/provider`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const bookings = await res.json();
+                    const list = document.getElementById('requestsList');
+
+                    if (bookings.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">No pending requests at the moment.</p>';
+                        return;
+                    }
+
+                    list.innerHTML = '';
+                    bookings.forEach(b => {
+                        list.innerHTML += `
+                            <div class="request-card" id="booking-${b.id}">
+                                <div class="req-info">
+                                    <h3>${b.service_name} Request</h3>
+                                    <p><strong>Customer:</strong> ${b.customer_name} (${b.customer_phone})</p>
+                                    <p><strong>Location:</strong> ${b.location}</p>
+                                    <p><strong>Hours Needed:</strong> ${b.hours_requested} hrs</p>
+                                    <p><strong>Total Est. Price:</strong> Rs. ${b.hourly_rate * b.hours_requested}</p>
+                                </div>
+                                <div class="req-actions">
+                                    <button class="btn btn-accept" onclick="updateStatus(${b.id}, 'accepted')">Accept</button>
+                                    <button class="btn btn-reject" onclick="updateStatus(${b.id}, 'rejected')">Reject</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                const res = await fetch(`${API_URL}/bookings/${id}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (res.ok) {
+                    if (status === 'accepted') {
+                        // Redirect to active booking screen
+                        window.location.href = 'active_booking.html';
+                    } else {
+                        document.getElementById(`booking-${id}`).remove();
+                        fetchRequests();
+                    }
+                } else {
+                    alert("Failed to update status.");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            try {
+                const res = await fetch(`${API_URL}/provider/service/offline`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.error || 'Cannot logout. Failed to set service offline.');
+                    return; // Prevent logout!
+                }
+            } catch (err) {
+                console.error('Failed to take provider offline on logout:', err);
+            }
+            localStorage.removeItem('servein_token');
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        });
+
+        // Dropdown Logic
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            if (!dropdownMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                dropdownMenu.classList.remove('active');
+            }
+        });
+
+        // Toggle Profile Section
+        document.getElementById('profileMenuBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showSection('profileSection');
+            dropdownMenu.classList.remove('active');
+        });
+
+        // Settings and Delete Account
+        document.getElementById('settingsMenuBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('settingsModal').classList.add('active');
+            dropdownMenu.classList.remove('active');
+        });
+
+        function openDeleteModal() {
+            document.getElementById('settingsModal').classList.remove('active');
+            document.getElementById('deleteAccountModal').classList.add('active');
+            document.getElementById('deletePassword').value = '';
+            document.getElementById('deleteMessage').style.display = 'none';
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+            const password = document.getElementById('deletePassword').value;
+            const msgEl = document.getElementById('deleteMessage');
+            
+            if (!password) {
+                msgEl.textContent = 'Please enter your password.';
+                msgEl.style.display = 'block';
+                return;
+            }
+
+            const originalText = this.innerHTML;
+            this.innerHTML = 'Deleting...';
+            this.disabled = true;
+
+            try {
+                const res = await fetch(`${API_URL}/account`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await res.json();
+                
+                if (res.ok) {
+                    localStorage.removeItem('servein_token');
+                    window.location.href = 'login.html';
+                } else {
+                    msgEl.textContent = data.error || 'Failed to delete account.';
+                    msgEl.style.display = 'block';
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }
+            } catch (err) {
+                msgEl.textContent = 'Network error. Try again.';
+                msgEl.style.display = 'block';
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }
+        });
+
+        // --- Notifications Logic ---
+        const notifMenuBtn = document.getElementById('notifMenuBtn');
+        const notifModal = document.getElementById('notifModal');
+        const notifList = document.getElementById('notifList');
+        const notifBadge = document.getElementById('notifBadge');
+
+        async function fetchNotifications() {
+            if (!token) return;
+            try {
+                const res = await fetch(`${API_URL}/notifications`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Count unread
+                    const unread = data.filter(n => !n.is_read).length;
+                    if (unread > 0) {
+                        notifBadge.textContent = unread;
+                        notifBadge.style.display = 'flex';
+                    } else {
+                        notifBadge.style.display = 'none';
+                    }
+
+                    if (data.length === 0) {
+                        notifList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px 0;">No notifications yet.</p>';
+                        return;
+                    }
+
+                    notifList.innerHTML = data.map(n => {
+                        const dateStr = new Date(n.created_at).toLocaleDateString('en-PK', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        const isUnread = !n.is_read;
+                        return `
+                            <div style="background: ${isUnread ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.02)'}; 
+                                        border: 1px solid ${isUnread ? 'rgba(16, 185, 129, 0.2)' : 'var(--glass-border)'}; 
+                                        border-radius: 12px; padding: 12px 15px; position: relative;">
+                                ${isUnread ? `<span style="position: absolute; top: 12px; right: 15px; width: 8px; height: 8px; background-color: var(--bright-green); border-radius: 50%;" title="Unread"></span>` : ''}
+                                <p style="color: var(--text-main); font-size: 13px; margin-bottom: 5px; padding-right: 15px; line-height: 1.4;">${n.message}</p>
+                                <span style="color: var(--text-muted); font-size: 11px;">${dateStr}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Fetch notifications error:', err);
+            }
+        }
+
+        notifMenuBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            dropdownMenu.classList.remove('active');
+            notifModal.classList.add('active');
+
+            // Mark all read
+            try {
+                const res = await fetch(`${API_URL}/notifications/read`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    notifBadge.style.display = 'none';
+                    // Re-fetch to show updated state
+                    fetchNotifications();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Periodically check notifications every 10 seconds
+        if (token) {
+            fetchNotifications();
+            setInterval(fetchNotifications, 10000);
+        }
+
+        // --- Edit Profile Logic ---
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const confirmEditProfileBtn = document.getElementById('confirmEditProfileBtn');
+        const editFullNameInput = document.getElementById('editFullName');
+        const editPhoneInput = document.getElementById('editPhone');
+        const editProfileError = document.getElementById('editProfileError');
+
+        editProfileBtn.addEventListener('click', function() {
+            document.getElementById('settingsModal').classList.remove('active');
+            editProfileModal.classList.add('active');
+            editProfileError.style.display = 'none';
+            
+            // Prefill values
+            editFullNameInput.value = document.getElementById('profName').textContent;
+            editPhoneInput.value = document.getElementById('profPhone').textContent;
+        });
+
+        confirmEditProfileBtn.addEventListener('click', async function() {
+            const full_name = editFullNameInput.value.trim();
+            const phone = editPhoneInput.value.trim();
+
+            if (!full_name || !phone) {
+                editProfileError.textContent = 'Please fill out all fields.';
+                editProfileError.style.display = 'block';
+                return;
+            }
+
+            confirmEditProfileBtn.disabled = true;
+            confirmEditProfileBtn.textContent = 'Saving...';
+            editProfileError.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_URL}/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ full_name, phone })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    // Refresh Profile
+                    location.reload();
+                } else {
+                    editProfileError.textContent = data.error || 'Failed to update profile.';
+                    editProfileError.style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                editProfileError.textContent = 'Network error. Please try again.';
+                editProfileError.style.display = 'block';
+            } finally {
+                confirmEditProfileBtn.disabled = false;
+                confirmEditProfileBtn.textContent = 'Save Changes';
+            }
+        });
+
+        // --- Change Password Logic ---
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const confirmChangePasswordBtn = document.getElementById('confirmChangePasswordBtn');
+        const currentPasswordInput = document.getElementById('currentPassword');
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+        const changePasswordError = document.getElementById('changePasswordError');
+
+        changePasswordBtn.addEventListener('click', function() {
+            document.getElementById('settingsModal').classList.remove('active');
+            changePasswordModal.classList.add('active');
+            changePasswordError.style.display = 'none';
+            currentPasswordInput.value = '';
+            newPasswordInput.value = '';
+            confirmNewPasswordInput.value = '';
+        });
+
+        confirmChangePasswordBtn.addEventListener('click', async function() {
+            const currentPassword = currentPasswordInput.value;
+            const newPassword = newPasswordInput.value;
+            const confirmNewPassword = confirmNewPasswordInput.value;
+
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                changePasswordError.textContent = 'Please fill out all fields.';
+                changePasswordError.style.display = 'block';
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                changePasswordError.textContent = 'New password must be at least 8 characters long.';
+                changePasswordError.style.display = 'block';
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                changePasswordError.textContent = 'New password and confirmation do not match.';
+                changePasswordError.style.display = 'block';
+                return;
+            }
+
+            if (newPassword === currentPassword) {
+                changePasswordError.textContent = 'New password cannot be the same as your current password.';
+                changePasswordError.style.display = 'block';
+                return;
+            }
+
+            confirmChangePasswordBtn.disabled = true;
+            confirmChangePasswordBtn.textContent = 'Updating...';
+            changePasswordError.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_URL}/change-password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Password changed successfully!');
+                    changePasswordModal.classList.remove('active');
+                } else {
+                    changePasswordError.textContent = data.error || 'Failed to change password.';
+                    changePasswordError.style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                changePasswordError.textContent = 'Network error. Please try again.';
+                changePasswordError.style.display = 'block';
+            } finally {
+                confirmChangePasswordBtn.disabled = false;
+                confirmChangePasswordBtn.textContent = 'Change Password';
+            }
+        });
+
+        // --- Services Provided History Logic ---
+        document.getElementById('servicesProvidedContainer').addEventListener('click', function() {
+            const historyModal = document.getElementById('providerHistoryModal');
+            historyModal.classList.add('active');
+            
+            const historyList = document.getElementById('providerHistoryList');
+            historyList.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loading-spinner"></span> Loading history...</div>';
+            
+            fetch(`${API_URL}/bookings/provider/history`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                    historyList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">You have not delivered any services yet.</p>';
+                    return;
+                }
+                
+                historyList.innerHTML = data.map(b => {
+                    const date = new Date(b.created_at).toLocaleDateString('en-PK', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const totalCost = b.hourly_rate * b.hours_requested;
+                    
+                    let ratingHtml = '';
+                    if (b.rating) {
+                        const stars = [1,2,3,4,5].map(i => 
+                            `<span style="color: ${i <= b.rating ? '#F59E0B' : 'var(--text-muted)'}; font-size: 14px;">★</span>`
+                        ).join('');
+                        ratingHtml = `
+                            <div style="margin-top: 10px; padding: 8px 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 8px;">
+                                <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 4px;">
+                                    <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Customer Rating:</span>
+                                    <span style="display: flex;">${stars}</span>
+                                </div>
+                                ${b.comment ? `<p style="color: var(--text-muted); font-size: 12px; margin: 0; line-height: 1.4; font-style: italic;">"${b.comment}"</p>` : ''}
+                            </div>
+                        `;
+                    } else {
+                        ratingHtml = `
+                            <div style="margin-top: 10px; color: var(--text-muted); font-size: 12px; font-style: italic;">
+                                Customer did not submit a review for this booking.
+                            </div>
+                        `;
+                    }
+                    
+                    return `
+                        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; text-align: left;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                <div>
+                                    <h4 style="color: var(--text-main); font-size: 16px; font-weight: 600; margin-bottom: 2px;">${b.service_name}</h4>
+                                    <p style="font-size: 12px; color: var(--text-muted);">${date}</p>
+                                </div>
+                                <span style="background: rgba(16, 185, 129, 0.1); color: var(--bright-green); border: 1px solid rgba(16, 185, 129, 0.2); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                    Completed
+                                </span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; color: var(--text-muted); margin-top: 10px; border-top: 1px dashed var(--glass-border); padding-top: 10px;">
+                                <div><strong>Customer:</strong> <span style="color: var(--text-main);">${b.customer_name}</span></div>
+                                <div><strong>Customer Phone:</strong> <span style="color: var(--text-main);">${b.customer_phone}</span></div>
+                                <div><strong>Hours:</strong> <span style="color: var(--text-main);">${b.hours_requested} hrs</span></div>
+                                <div><strong>Hourly Rate:</strong> <span style="color: var(--text-main);">Rs. ${b.hourly_rate}/hr</span></div>
+                                <div><strong>Total Earnings:</strong> <span style="color: var(--bright-green); font-weight: 600;">Rs. ${totalCost}</span></div>
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-muted); margin-top: 6px;">
+                                <strong>Location:</strong> <span style="color: var(--text-main);">${b.location}</span>
+                            </div>
+                            ${ratingHtml}
+                        </div>
+                    `;
+                }).join('');
+            })
+            .catch(err => {
+                console.error(err);
+                historyList.innerHTML = '<p style="color: var(--bright-red); text-align: center;">Failed to load history.</p>';
+            });
+        });
+
+        async function openMyReviews() {
+            document.getElementById('myReviewsModal').classList.add('active');
+            const reviewsList = document.getElementById('myReviewsList');
+            reviewsList.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loading-spinner"></span> Loading reviews...</div>';
+            
+            try {
+                const res = await fetch(`${API_URL}/my-reviews`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (!Array.isArray(data) || data.length === 0) {
+                        reviewsList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">You have no reviews yet.</p>';
+                        return;
+                    }
+                    
+                    reviewsList.innerHTML = data.map(r => {
+                        const date = new Date(r.created_at).toLocaleDateString('en-PK', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        
+                        const stars = [1,2,3,4,5].map(i => 
+                            `<span style="color: ${i <= r.rating ? '#F59E0B' : 'var(--text-muted)'}; font-size: 14px;">★</span>`
+                        ).join('');
+                        
+                        return `
+                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-bottom: 12px; text-align: left;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <strong>${r.customer_name}</strong>
+                                    <span style="font-size: 12px; color: var(--text-muted);">${date}</span>
+                                </div>
+                                <div style="display: flex; margin-bottom: 8px;">${stars}</div>
+                                ${r.comment ? `<p style="color: var(--text-muted); font-size: 13px; font-style: italic; line-height: 1.4; margin: 0;">"${r.comment}"</p>` : '<p style="color: var(--text-muted); font-size: 13px; font-style: italic; margin: 0;">No comments left.</p>'}
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    reviewsList.innerHTML = '<p style="color: var(--bright-red); text-align: center; padding: 20px;">Failed to load reviews.</p>';
+                }
+            } catch (err) {
+                console.error(err);
+                reviewsList.innerHTML = '<p style="color: var(--bright-red); text-align: center; padding: 20px;">Failed to load reviews.</p>';
+            }
+        }
+
+        // --- Customer Mode Password-Lock Switch Logic ---
+        const customerModeLink = document.getElementById('customerModeLink');
+        const switchModePasswordModal = document.getElementById('switchModePasswordModal');
+        const confirmSwitchModeBtn = document.getElementById('confirmSwitchModeBtn');
+        const switchModePasswordInput = document.getElementById('switchModePassword');
+        const switchModeError = document.getElementById('switchModeError');
+
+        customerModeLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            dropdownMenu.classList.remove('active');
+            
+            // Open modal
+            switchModePasswordModal.classList.add('active');
+            switchModePasswordInput.value = '';
+            switchModePasswordInput.type = 'password';
+            document.getElementById('toggleSwitchPassword').style.color = 'var(--text-muted)';
+            switchModePasswordInput.focus();
+            switchModeError.style.display = 'none';
+        });
+
+        function closeSwitchModeModal() {
+            switchModePasswordModal.classList.remove('active');
+        }
+
+        // Toggle password visibility in verification modal
+        const toggleSwitchPassword = document.getElementById('toggleSwitchPassword');
+        toggleSwitchPassword.addEventListener('click', function() {
+            const type = switchModePasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            switchModePasswordInput.setAttribute('type', type);
+            this.style.color = type === 'text' ? 'var(--bright-green)' : 'var(--text-muted)';
+        });
+
+        confirmSwitchModeBtn.addEventListener('click', async function() {
+            const password = switchModePasswordInput.value;
+            if (!password) {
+                switchModeError.textContent = 'Please enter your password.';
+                switchModeError.style.display = 'block';
+                return;
+            }
+
+            confirmSwitchModeBtn.disabled = true;
+            confirmSwitchModeBtn.textContent = 'Verifying...';
+            switchModeError.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_URL}/verify-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                if (res.ok) {
+                    confirmSwitchModeBtn.textContent = 'Verified!';
+                    sessionStorage.setItem('servein_mode', 'customer');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 800);
+                } else {
+                    const data = await res.json();
+                    switchModeError.textContent = data.error || 'Incorrect password.';
+                    switchModeError.style.display = 'block';
+                    confirmSwitchModeBtn.disabled = false;
+                    confirmSwitchModeBtn.textContent = 'Verify & Switch';
+                }
+            } catch (err) {
+                console.error(err);
+                switchModeError.textContent = 'Network error. Please try again.';
+                switchModeError.style.display = 'block';
+                confirmSwitchModeBtn.disabled = false;
+                confirmSwitchModeBtn.textContent = 'Verify & Switch';
+            }
+        });
+
+        // Initial fetch
+        fetchRequests();
+        fetchProfile();
+        fetchMyRegisteredService();
+
+        // Poll for new requests every 5 seconds
+        setInterval(fetchRequests, 5000);
+        // Poll for registered service status changes
+        setInterval(fetchMyRegisteredService, 5000);
+    </script>
+</body>
+
+</html>

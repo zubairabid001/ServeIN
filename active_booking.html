@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Booking - ServeIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color-1: #0A0E17;
+            --bg-color-2: #0E1A35;
+            --bg-color-3: #000000;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --glass-bg: rgba(10, 14, 23, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --bright-blue: #2563EB;
+            --bright-green: #10B981;
+            --bright-red: #EF4444;
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --input-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            background: radial-gradient(circle at 50% 0%, var(--bg-color-1) 0%, var(--bg-color-2) 60%, var(--bg-color-3) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 { font-size: 28px; font-weight: 600; color: var(--bright-green); }
+        .header p { color: var(--text-muted); margin-top: 5px; }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+        }
+
+        .card h2 { font-size: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-item { display: flex; flex-direction: column; gap: 5px; }
+        .detail-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-value { font-size: 16px; font-weight: 500; }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-chat { background: var(--bright-blue); color: white; }
+        .btn-chat:hover { background: #1E3A8A; }
+        
+        .btn-complete { background: var(--bright-green); color: white; }
+        .btn-complete:hover { background: #059669; }
+        .btn-complete:disabled { background: var(--text-muted); cursor: not-allowed; opacity: 0.6; }
+
+        .btn-cancel { background: transparent; color: var(--bright-red); border: 1px solid var(--bright-red); }
+        .btn-cancel:hover { background: rgba(239, 68, 68, 0.1); }
+
+        #loading { text-align: center; font-size: 18px; color: var(--text-muted); margin-top: 50px; }
+
+        /* Modal Overlays */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-overlay.active { display: flex; }
+
+        /* Chat Message styles */
+        .msg-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 75%;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .msg-bubble.me {
+            background: var(--bright-blue);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .msg-bubble.other {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border: 1px solid var(--glass-border);
+        }
+        .msg-sender {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        /* Toast Notifications Styles */
+        .toast {
+            background: rgba(14, 26, 53, 0.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-main);
+            min-width: 280px;
+            max-width: 360px;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--bright-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .toast-content {
+            flex: 1;
+        }
+        .toast-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            text-align: left;
+        }
+        .toast-message {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: left;
+        }
+        .toast-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .actions .btn {
+                justify-content: center;
+                width: 100%;
+            }
+            #chatDrawer {
+                width: 100% !important;
+                max-width: 400px !important;
+            }
+            #mainContainer {
+                margin-right: 0 !important;
+            }
+            .modal-overlay > div {
+                width: 90% !important;
+                max-width: 400px !important;
+                padding: 20px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
+
+    <div id="loading">Loading active booking...</div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <div class="header">
+            <h1>Active Booking</h1>
+            <p>Your service is currently active.</p>
+        </div>
+
+        <!-- Status Notification Box -->
+        <div id="statusNotification" style="display: none; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 15px; text-align: center; color: var(--bright-green); font-weight: 600;">
+            Waiting...
+        </div>
+
+        <div class="card">
+            <h2>Service Details</h2>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Service</span>
+                    <span class="detail-value" id="serviceName">...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value" id="location">...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Hours Requested</span>
+                    <span class="detail-value" id="hours">...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Total Estimated Price</span>
+                    <span class="detail-value" id="price" style="color: var(--bright-green);">...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Party Details</h2>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Customer Name</span>
+                    <span class="detail-value" id="customerName">...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Customer Phone</span>
+                    <span class="detail-value" id="customerPhone">...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Provider Name</span>
+                    <span class="detail-value" id="providerName">...</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Provider Phone</span>
+                    <span class="detail-value" id="providerPhone">...</span>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-chat" onclick="openChat()" style="position: relative;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Chat
+                    <span id="chatBadge" style="display: none; position: absolute; top: -5px; right: -5px; background: var(--bright-red); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; align-items: center; justify-content: center; font-weight: 700; border: 2px solid var(--bg-color-2);">0</span>
+                </button>
+                <!-- Only shown to provider via JS -->
+                <button class="btn btn-complete" id="completeBtn" onclick="providerMarkDone()" style="display:none;">Mark Job as Done</button>
+                <button class="btn btn-cancel" id="cancelBtn" onclick="cancelBooking()">Cancel Booking</button>
+            </div>
+        </div>
+
+        <!-- Provider Profile & Reviews Card (Shown to customer only) -->
+        <div class="card" id="providerProfileCard" style="display: none; margin-top: 10px;">
+            <h2 style="color: var(--bright-green);">Provider Profile & Reviews</h2>
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--glass-border);">
+                <div id="providerActiveAvatar" style="width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: white; background: linear-gradient(135deg, var(--bright-green), var(--bright-blue)); text-shadow: 0 2px 4px rgba(0,0,0,0.2);">P</div>
+                <div>
+                    <h3 id="providerActiveName" style="font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">...</h3>
+                    <div id="providerActiveStats" style="display: flex; gap: 10px; font-size: 13px; color: var(--text-muted); align-items: center;">
+                        <span id="providerActiveRating" style="display: flex; align-items: center; gap: 4px;">★ 0.0</span>
+                        <span id="providerActiveJobs">• 0 jobs done</span>
+                    </div>
+                </div>
+            </div>
+            <h4 style="font-size: 14px; color: var(--text-main); margin-bottom: 12px;">Customer Reviews</h4>
+            <div id="providerActiveReviews" style="display: flex; flex-direction: column; gap: 10px;">
+                <p style="color: var(--text-muted); font-size: 13px; font-style: italic;">Loading reviews...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Drawer panel sliding from right -->
+    <div id="chatDrawer" style="position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: var(--bg-color-2); border-left: 1px solid var(--glass-border); box-shadow: -10px 0 30px rgba(0,0,0,0.5); z-index: 1000; transition: right 0.3s ease; display: flex; flex-direction: column; backdrop-filter: blur(20px);">
+        <div style="padding: 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 18px; font-weight: 600; color: var(--text-main);">Chat Messenger</h3>
+            <button onclick="closeChat()" style="background: transparent; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer;">✕</button>
+        </div>
+        <div id="chatMessages" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
+            <!-- Message bubbles go here -->
+        </div>
+        <form id="chatForm" style="padding: 20px; border-top: 1px solid var(--glass-border); display: flex; gap: 10px;">
+            <input type="text" id="chatInput" placeholder="Type a message..." style="flex: 1; padding: 12px; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-main); outline: none;" required>
+            <button type="submit" style="background: var(--bright-blue); border: none; color: white; padding: 0 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">Send</button>
+        </form>
+    </div>
+
+    <!-- Rating and Review Modal -->
+    <div class="modal-overlay" id="ratingModal">
+        <div style="background: var(--bg-color-2); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+            <h3 style="font-size: 22px; color: var(--text-main); margin-bottom: 10px;">Rate the Service</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Please rate your experience with <span id="ratingProviderName" style="color: var(--bright-green); font-weight: 600;">...</span></p>
+            
+            <div id="starContainer" style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; font-size: 36px; user-select:none;">
+                <span class="star" data-rating="1" style="cursor: pointer; color: var(--text-muted); transition: color 0.2s;">★</span>
+                <span class="star" data-rating="2" style="cursor: pointer; color: var(--text-muted); transition: color 0.2s;">★</span>
+                <span class="star" data-rating="3" style="cursor: pointer; color: var(--text-muted); transition: color 0.2s;">★</span>
+                <span class="star" data-rating="4" style="cursor: pointer; color: var(--text-muted); transition: color 0.2s;">★</span>
+                <span class="star" data-rating="5" style="cursor: pointer; color: var(--text-muted); transition: color 0.2s;">★</span>
+            </div>
+
+            <div class="form-group" style="text-align: left; margin-bottom: 20px; display:flex; flex-direction:column; gap:8px;">
+                <label style="color: var(--text-muted); font-size: 14px;">Leave a Comment</label>
+                <textarea id="reviewComment" placeholder="Write a short review..." style="width: 100%; height: 80px; padding: 12px; border-radius: 10px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-main); outline: none; resize: none; font-size:14px;"></textarea>
+            </div>
+
+            <button id="submitReviewBtn" style="background: var(--bright-green); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer;">Submit Review</button>
+        </div>
+    </div>
+
+    <!-- Customer Job Confirmation Modal -->
+    <div class="modal-overlay" id="customerConfirmModal">
+        <div style="background: var(--bg-color-2); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+            <div style="font-size: 48px; margin-bottom: 15px;">🔔</div>
+            <h3 style="font-size: 20px; color: var(--text-main); margin-bottom: 10px;">Job Completion Request</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px;">
+                The service provider has marked this job as <strong style="color: var(--bright-green);">done</strong>. Is the work completed to your satisfaction?
+            </p>
+            <div style="display: flex; gap: 15px;">
+                <button onclick="customerDenyDone()" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid var(--bright-red); background: transparent; color: var(--bright-red); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s;">
+                    ✗ Not Done
+                </button>
+                <button onclick="customerConfirmDone()" style="flex: 1; padding: 14px; border-radius: 12px; border: none; background: var(--bright-green); color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s;">
+                    ✓ Yes, Done!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.port === '3000' ? '/api' : 'http://localhost:3000/api';
+        const token = localStorage.getItem('servein_token') || localStorage.getItem('token');
+        
+        let currentBookingId = null;
+        let myId = null;
+        let myRole = ''; 
+        let providerNameStr = '';
+        let bookingPollInterval = null;
+        let chatPollInterval = null;
+        let markedDoneByMe = false;
+        let chatOpen = false;
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        function getMyId() {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload).id;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        myId = getMyId();
+
+        async function fetchActiveBooking() {
+            try {
+                const res = await fetch(`${API_URL}/bookings/active`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const b = await res.json();
+                    currentBookingId = b.id;
+                    providerNameStr = b.provider_name;
+                    document.getElementById('ratingProviderName').textContent = b.provider_name;
+                    
+                    if (!chatPollInterval) {
+                        fetchMessages();
+                        chatPollInterval = setInterval(fetchMessages, 2000);
+                    }
+                    
+                    if (myId === b.customer_id) {
+                        myRole = 'customer';
+                    } else {
+                        myRole = 'provider';
+                    }
+
+                    // Show/hide complete button based on role
+                    const completeBtn = document.getElementById('completeBtn');
+                    if (myRole === 'provider') {
+                        completeBtn.style.display = 'inline-flex';
+                    } else {
+                        completeBtn.style.display = 'none';
+                    }
+
+                    document.getElementById('serviceName').textContent = b.service_name;
+                    document.getElementById('location').textContent = b.location;
+                    document.getElementById('hours').textContent = b.hours_requested + ' hrs';
+                    document.getElementById('price').textContent = 'Rs. ' + (b.hourly_rate * b.hours_requested);
+                    
+                    document.getElementById('customerName').textContent = b.customer_name;
+                    document.getElementById('customerPhone').textContent = b.customer_phone;
+                    document.getElementById('providerName').textContent = b.provider_name;
+                    document.getElementById('providerPhone').textContent = b.provider_phone;
+
+                    if (myRole === 'customer') {
+                        // Display Provider Profile card
+                        document.getElementById('providerProfileCard').style.display = 'block';
+                        document.getElementById('providerActiveName').textContent = b.provider_name;
+                        
+                        // Rating & Jobs done display
+                        const pRating = parseFloat(b.provider_rating) || 0;
+                        const pTotalRatings = b.provider_total_ratings || 0;
+                        const stars = [1,2,3,4,5].map(i =>
+                            `<span style="color: ${i <= Math.round(pRating) ? '#F59E0B' : 'var(--text-muted)'}; font-size: 14px;">★</span>`
+                        ).join('');
+                        document.getElementById('providerActiveRating').innerHTML = `${stars} <span style="margin-left: 4px;">${pRating.toFixed(1)} (${pTotalRatings})</span>`;
+                        document.getElementById('providerActiveJobs').textContent = `• ${b.provider_services_provided || 0} jobs done`;
+
+                        // Avatar
+                        if (b.provider_profile_pic) {
+                            const baseUrl = window.location.port === '3000' ? '' : 'http://localhost:3000';
+                            document.getElementById('providerActiveAvatar').innerHTML = `<img src="${baseUrl}${b.provider_profile_pic}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                        } else {
+                            const initials = b.provider_name ? b.provider_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'P';
+                            document.getElementById('providerActiveAvatar').textContent = initials;
+                            document.getElementById('providerActiveAvatar').innerHTML = initials;
+                        }
+
+                        // Fetch reviews once if we haven't loaded them yet
+                        if (!window._loadedProviderReviewsId || window._loadedProviderReviewsId !== b.provider_id) {
+                            window._loadedProviderReviewsId = b.provider_id;
+                            const reviewsContainer = document.getElementById('providerActiveReviews');
+                            
+                            fetch(`${API_URL}/providers/${b.provider_id}/reviews`)
+                                .then(r => r.json())
+                                .then(reviews => {
+                                    if (!reviews || reviews.length === 0) {
+                                        reviewsContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 13px; font-style: italic;">No reviews yet.</p>';
+                                        return;
+                                    }
+                                    reviewsContainer.innerHTML = reviews.map(r => {
+                                        const rStars = [1,2,3,4,5].map(i => `<span style="color: ${i <= r.rating ? '#F59E0B' : 'var(--text-muted)'}; font-size: 12px;">★</span>`).join('');
+                                        const rDate = new Date(r.created_at).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', year: 'numeric' });
+                                        return `
+                                            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 10px; padding: 10px 12px; text-align: left;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                                    <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">${r.customer_name}</span>
+                                                    <span style="font-size: 11px; color: var(--text-muted);">${rDate}</span>
+                                                </div>
+                                                <div style="display: flex; margin-bottom: 6px;">${rStars}</div>
+                                                ${r.comment ? `<p style="color: var(--text-muted); font-size: 12px; margin: 0; line-height: 1.4; font-style: italic;">"${r.comment}"</p>` : ''}
+                                            </div>
+                                        `;
+                                    }).join('');
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    reviewsContainer.innerHTML = '<p style="color: var(--bright-red); font-size: 13px;">Failed to load reviews.</p>';
+                                });
+                        }
+                    } else {
+                        document.getElementById('providerProfileCard').style.display = 'none';
+                    }
+
+                    const notifyEl = document.getElementById('statusNotification');
+
+                    if (myRole === 'customer') {
+                        // Customer: show confirmation modal if provider marked done
+                        if (b.provider_done && !b.customer_done) {
+                            // Show the confirmation dialog
+                            document.getElementById('customerConfirmModal').classList.add('active');
+                            notifyEl.style.display = 'block';
+                            notifyEl.textContent = 'Provider has marked the job as done. Please confirm below.';
+                        } else if (b.customer_done) {
+                            // Customer already confirmed, waiting for... (shouldn't happen in new flow)
+                            notifyEl.style.display = 'block';
+                            notifyEl.textContent = 'You confirmed completion. Booking is being finalized.';
+                            markedDoneByMe = true;
+                        } else {
+                            document.getElementById('customerConfirmModal').classList.remove('active');
+                            notifyEl.style.display = 'none';
+                        }
+                    } else if (myRole === 'provider') {
+                        if (b.provider_done) {
+                            markedDoneByMe = true;
+                            completeBtn.disabled = true;
+                            completeBtn.textContent = 'Waiting for Customer...';
+                            notifyEl.style.display = 'block';
+                            notifyEl.textContent = 'You marked the job as done. Waiting for customer confirmation.';
+                        } else {
+                            completeBtn.disabled = false;
+                            completeBtn.textContent = 'Mark Job as Done';
+                            notifyEl.style.display = 'none';
+                        }
+                    }
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = 'flex';
+                } else {
+                    // Booking no longer active
+                    if (markedDoneByMe && myRole === 'provider') {
+                        clearInterval(bookingPollInterval);
+                        clearInterval(chatPollInterval);
+                        alert("Job completed successfully! Please re-offer your service from the dashboard.");
+                        window.location.href = 'provider_dashboard.html';
+                    } else if (markedDoneByMe && myRole === 'customer') {
+                        clearInterval(bookingPollInterval);
+                        clearInterval(chatPollInterval);
+                        openRatingModal();
+                    } else {
+                        clearInterval(bookingPollInterval);
+                        clearInterval(chatPollInterval);
+                        alert("The active booking has been cancelled or completed.");
+                        window.location.href = myRole === 'provider' ? 'provider_dashboard.html' : 'dashboard.html';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Provider marks the job as done
+        async function providerMarkDone() {
+            if (!confirm("Mark this job as done? The customer will be asked to confirm.")) return;
+            const btn = document.getElementById('completeBtn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBookingId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status: 'completed' })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    markedDoneByMe = true;
+                    if (data.fullyCompleted) {
+                        // Edge case: customer had already confirmed
+                        clearInterval(bookingPollInterval);
+                        clearInterval(chatPollInterval);
+                        alert("Job completed successfully! Please re-offer your service from your dashboard.");
+                        window.location.href = 'provider_dashboard.html';
+                    } else {
+                        btn.textContent = 'Waiting for Customer...';
+                        fetchActiveBooking();
+                    }
+                } else {
+                    alert("Failed to mark job as done.");
+                    btn.disabled = false;
+                    btn.textContent = 'Mark Job as Done';
+                }
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.textContent = 'Mark Job as Done';
+            }
+        }
+
+        // Customer confirms the job is done
+        async function customerConfirmDone() {
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBookingId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status: 'completed' })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('customerConfirmModal').classList.remove('active');
+                    markedDoneByMe = true;
+                    if (data.fullyCompleted) {
+                        clearInterval(bookingPollInterval);
+                        clearInterval(chatPollInterval);
+                        openRatingModal();
+                    } else {
+                        fetchActiveBooking();
+                    }
+                } else {
+                    alert("Failed to confirm completion. Please try again.");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Customer says the job is NOT done — reset provider_done
+        async function customerDenyDone() {
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBookingId}/reset-done`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    document.getElementById('customerConfirmModal').classList.remove('active');
+                    const notifyEl = document.getElementById('statusNotification');
+                    notifyEl.style.display = 'block';
+                    notifyEl.style.background = 'rgba(239, 68, 68, 0.1)';
+                    notifyEl.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                    notifyEl.style.color = 'var(--bright-red)';
+                    notifyEl.textContent = 'You indicated the job is not done yet. The provider will be notified to re-check.';
+                } else {
+                    alert("Failed to send response. Please try again.");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function cancelBooking() {
+            if (!confirm("Are you sure you want to cancel this active booking?")) return;
+
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBookingId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: 'cancelled' })
+                });
+
+                if (res.ok) {
+                    alert("Booking cancelled successfully.");
+                    window.location.href = myRole === 'provider' ? 'provider_dashboard.html' : 'dashboard.html';
+                } else {
+                    alert("Failed to cancel booking.");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        /* --- Chat Panel Logic --- */
+        let lastSeenMessagesLength = 0;
+        let isFirstLoad = true;
+
+        function showToast(senderName, messageText) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${senderName}</div>
+                    <div class="toast-message">${escapeHtml(messageText)}</div>
+                </div>
+                <button class="toast-close">✕</button>
+            `;
+            
+            toast.addEventListener('click', (e) => {
+                if (e.target.classList.contains('toast-close')) return;
+                openChat();
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            });
+
+            toast.querySelector('.toast-close').addEventListener('click', (e) => {
+                e.stopPropagation();
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            });
+
+            container.appendChild(toast);
+            toast.offsetHeight; // trigger reflow
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 400);
+                }
+            }, 4000);
+        }
+
+        function openChat() {
+            document.getElementById('chatDrawer').style.right = '0';
+            document.getElementById('mainContainer').style.marginRight = '200px';
+            chatOpen = true;
+            
+            // Clear badge immediately
+            const badge = document.getElementById('chatBadge');
+            badge.style.display = 'none';
+            badge.textContent = '0';
+            
+            fetchMessages();
+        }
+
+        function closeChat() {
+            document.getElementById('chatDrawer').style.right = '-420px';
+            document.getElementById('mainContainer').style.marginRight = '0';
+            chatOpen = false;
+        }
+
+        async function fetchMessages() {
+            if (!currentBookingId) return;
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBookingId}/messages`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const messages = await res.json();
+                    const container = document.getElementById('chatMessages');
+                    
+                    if (chatOpen) {
+                        const wasAtBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+                        container.innerHTML = '';
+                        messages.forEach(m => {
+                            const isMe = m.sender_id === myId;
+                            container.innerHTML += `
+                                <div class="msg-bubble ${isMe ? 'me' : 'other'}">
+                                    <div class="msg-sender">${isMe ? 'You' : m.sender_name}</div>
+                                    <div>${escapeHtml(m.message)}</div>
+                                </div>
+                            `;
+                        });
+                        
+                        if (wasAtBottom || lastSeenMessagesLength !== messages.length) {
+                            container.scrollTop = container.scrollHeight;
+                        }
+                        
+                        lastSeenMessagesLength = messages.length;
+                        
+                        // Keep badge cleared
+                        const badge = document.getElementById('chatBadge');
+                        badge.style.display = 'none';
+                        badge.textContent = '0';
+                    } else {
+                        // Chat drawer is closed: check for new messages
+                        if (!isFirstLoad && messages.length > lastSeenMessagesLength) {
+                            const newMessages = messages.slice(lastSeenMessagesLength);
+                            let otherUserMessagesCount = 0;
+                            
+                            newMessages.forEach(m => {
+                                if (m.sender_id !== myId) {
+                                    otherUserMessagesCount++;
+                                    showToast(m.sender_name, m.message);
+                                }
+                            });
+                            
+                            if (otherUserMessagesCount > 0) {
+                                const badge = document.getElementById('chatBadge');
+                                const currentBadgeVal = parseInt(badge.textContent) || 0;
+                                const newVal = currentBadgeVal + otherUserMessagesCount;
+                                badge.textContent = newVal;
+                                badge.style.display = 'flex';
+                            }
+                            
+                            lastSeenMessagesLength = messages.length;
+                        } else if (isFirstLoad) {
+                            lastSeenMessagesLength = messages.length;
+                            isFirstLoad = false;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Fetch messages error:", err);
+            }
+        }
+
+        document.getElementById('chatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message || !currentBookingId) return;
+
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBookingId}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                if (res.ok) {
+                    input.value = '';
+                    fetchMessages();
+                }
+            } catch (err) {
+                console.error("Send message error:", err);
+            }
+        });
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        /* --- Rating Modal Logic --- */
+        let selectedRating = 0;
+
+        function openRatingModal() {
+            document.getElementById('ratingModal').classList.add('active');
+        }
+
+        // Star highlighting
+        const stars = document.querySelectorAll('.star');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-rating'));
+                updateStars(selectedRating);
+            });
+            star.addEventListener('mouseover', function() {
+                const hoverRating = parseInt(this.getAttribute('data-rating'));
+                updateStars(hoverRating);
+            });
+            star.addEventListener('mouseleave', function() {
+                updateStars(selectedRating);
+            });
+        });
+
+        function updateStars(rating) {
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    star.style.color = '#F59E0B'; // Gold star
+                } else {
+                    star.style.color = 'var(--text-muted)';
+                }
+            });
+        }
+
+        document.getElementById('submitReviewBtn').addEventListener('click', async () => {
+            if (selectedRating === 0) {
+                alert("Please select a rating of 1 to 5 stars.");
+                return;
+            }
+
+            const comment = document.getElementById('reviewComment').value.trim();
+            const btn = document.getElementById('submitReviewBtn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBookingId}/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ rating: selectedRating, comment })
+                });
+
+                if (res.ok) {
+                    alert("Thank you for your feedback!");
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert("Failed to submit review.");
+                    btn.disabled = false;
+                    btn.textContent = 'Submit Review';
+                }
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.textContent = 'Submit Review';
+            }
+        });
+
+        // Initialize and Start Polling
+        fetchActiveBooking();
+        bookingPollInterval = setInterval(fetchActiveBooking, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ServeIN</title>
+    <meta name="description" content="Create your ServeIN account.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark Blue & Black Theme */
+            --navy-blue: #0A0E17;
+            --royal-blue: #0E1A35;
+            --bright-blue: #2563EB;
+            --mid-blue: #1E3A8A;
+            --dark-bg: #000000;
+            --error-color: #EF4444;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 50%, var(--royal-blue) 0%, var(--navy-blue) 60%, var(--dark-bg) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* 3D Animated Grid Background */
+        .background-grid {
+            position: fixed;
+            width: 200vw;
+            height: 200vh;
+            top: -50vh;
+            left: -50vw;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(600px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 15s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: perspective(600px) rotateX(60deg) translateY(0) translateZ(-200px);
+            }
+
+            100% {
+                transform: perspective(600px) rotateX(60deg) translateY(60px) translateZ(-200px);
+            }
+        }
+
+        /* Floating Glowing Particles */
+        .shape {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 10s infinite ease-in-out alternate;
+            z-index: 0;
+        }
+
+        .shape-1 {
+            width: 350px;
+            height: 350px;
+            background: var(--bright-blue);
+            top: 10%;
+            left: 15%;
+            animation-duration: 12s;
+        }
+
+        .shape-2 {
+            width: 450px;
+            height: 450px;
+            background: var(--mid-blue);
+            bottom: 10%;
+            right: 15%;
+            animation-duration: 16s;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(40px, -20px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-20px, 40px) scale(0.9);
+            }
+        }
+
+        /* Glassmorphism Register Container */
+        .register-container {
+            position: relative;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 40px 35px;
+            width: 100%;
+            max-width: 460px;
+            /* Reduced for single column layout */
+            z-index: 1;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: dropIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(-40px) scale(0.95);
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--bright-blue), var(--mid-blue), transparent, transparent);
+            z-index: -1;
+            border-radius: 26px;
+            background-size: 400% 400%;
+            animation: borderGlow 8s ease infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes borderGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes dropIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h1 {
+            color: var(--text-main);
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(37, 99, 235, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .register-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Single Column Form Layout */
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-group input[readonly] {
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            border-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .input-group input:focus:not([readonly]) {
+            border-color: var(--bright-blue);
+            background: rgba(37, 99, 235, 0.05);
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .input-group input.error {
+            border-color: var(--error-color);
+            background: rgba(239, 68, 68, 0.05);
+            animation: shakeError 0.4s ease-in-out;
+        }
+
+        @keyframes shakeError {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            50% {
+                transform: translateX(4px);
+            }
+
+            75% {
+                transform: translateX(-4px);
+            }
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .error-message::before {
+            content: '⚠';
+            font-size: 12px;
+        }
+
+        .error-message.visible {
+            max-height: 20px;
+            opacity: 1;
+        }
+
+        /* Phone Input split layout */
+        .phone-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .phone-wrapper .country-code {
+            width: 70px;
+            text-align: center;
+            padding: 14px 0;
+        }
+
+        .phone-wrapper .phone-number {
+            flex: 1;
+        }
+
+        /* Password Wrapper for Realistic SVG Eye Icon */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+            user-select: none;
+        }
+
+        .eye-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+        }
+
+        .eye-icon:hover {
+            color: var(--text-main);
+        }
+
+        /* Password Strength UI */
+        .strength-container {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .strength-container.visible {
+            display: block;
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 4px;
+            height: 4px;
+        }
+
+        .bar {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 20px;
+            background: linear-gradient(90deg, var(--mid-blue), var(--bright-blue), var(--mid-blue));
+            background-size: 200% auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-btn:hover {
+            background-position: right center;
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .register-btn:active {
+            transform: translateY(1px);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .login-link a {
+            color: var(--bright-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: var(--text-main);
+            text-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
+            text-decoration: underline;
+        }
+
+        /* OTP Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(10, 14, 23, 0.95);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h2 {
+            color: var(--text-main);
+            margin-bottom: 12px;
+            font-size: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .modal-content p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-content input:focus {
+            border-color: var(--bright-blue);
+            outline: none;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .modal-content input.error {
+            border-color: var(--error-color);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 10px;
+            background: linear-gradient(90deg, var(--bright-blue), var(--mid-blue));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .verify-btn:hover {
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 480px), (max-height: 640px) {
+            body {
+                align-items: flex-start;
+                padding: 20px 10px;
+            }
+            .modal-overlay {
+                align-items: flex-start !important;
+                overflow-y: auto !important;
+                padding: 40px 10px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            .register-header h1 {
+                font-size: 26px;
+            }
+            .modal-content {
+                width: 90% !important;
+                padding: 25px 20px;
+            }
+            .modal-content h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 3D Animated Grid & Glowing Orbs -->
+    <div class="background-grid"></div>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+
+    <div class="register-container">
+        <div class="register-header">
+            <h1>Create Account</h1>
+            <p>Join ServeIN to get started</p>
+        </div>
+
+        <form id="registerForm" novalidate>
+            <div class="form-grid">
+                <!-- 1. Name -->
+                <div class="input-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Enter Your Name" autocomplete="name">
+                    <div class="error-message" id="nameError"></div>
+                </div>
+
+                <!-- 2. Phone Number -->
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <div class="phone-wrapper">
+                        <input type="text" class="country-code" value="+92" readonly title="Pakistan">
+                        <input type="text" id="phone" class="phone-number" placeholder="3XX-XXXXXXX" maxlength="11">
+                    </div>
+                    <div class="error-message" id="phoneError"></div>
+                </div>
+
+                <!-- 3. Email Address -->
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter Your Email" autocomplete="email">
+                    <div class="error-message" id="emailError"></div>
+                </div>
+
+                <!-- 4. CNIC Number -->
+                <div class="input-group">
+                    <label for="cnic">CNIC Number</label>
+                    <input type="text" id="cnic" placeholder="XXXXX-XXXXXXX-X" maxlength="15">
+                    <div class="error-message" id="cnicError"></div>
+                </div>
+
+
+                <!-- 5. Password -->
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Enter Password">
+                        <span class="eye-icon" id="togglePassword" title="Show/Hide Password">
+                            <!-- SVG Eye Open -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                    <!-- Password Sensitivity Indicator -->
+                    <div class="strength-container" id="strengthContainer">
+                        <div class="strength-bars">
+                            <div class="bar" id="bar1"></div>
+                            <div class="bar" id="bar2"></div>
+                            <div class="bar" id="bar3"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText">Weak</div>
+                    </div>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <!-- 6. Confirm Password -->
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                        <span class="eye-icon" id="toggleConfirmPassword" title="Show/Hide Password">
+                            <!-- SVG Eye Open -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="register-btn" id="registerBtn">Register</button>
+
+            <!-- Link back to login -->
+            <div class="login-link">
+                Already have an account? <a href="login.html">Login</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal-overlay" id="otpModal">
+        <div class="modal-content">
+            <h2>Verify Your Email</h2>
+            <p id="modalEmailText">An OTP has been sent to your email. Please enter it below to complete registration.
+            </p>
+            <input type="text" id="modalOtpInput" placeholder="000000" maxlength="6" autocomplete="off">
+            <div class="error-message" id="modalOtpError" style="justify-content: center; margin-bottom: 15px;"></div>
+            <button class="verify-btn" id="modalVerifyBtn">Verify & Complete</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.port === '3000' ? '/api' : 'http://localhost:3000/api';
+        const form = document.getElementById('registerForm');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const cnicInput = document.getElementById('cnic');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        // Modal Elements
+        const otpModal = document.getElementById('otpModal');
+        const modalOtpInput = document.getElementById('modalOtpInput');
+        const modalVerifyBtn = document.getElementById('modalVerifyBtn');
+        const modalOtpError = document.getElementById('modalOtpError');
+        const modalEmailText = document.getElementById('modalEmailText');
+
+        // Error element references
+        const nameError = document.getElementById('nameError');
+        const phoneError = document.getElementById('phoneError');
+        const cnicError = document.getElementById('cnicError');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+        // Validation Regex
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\d{3}-\d{7}$/;
+        const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
+
+        // Realistic Eye SVGs
+        const eyeOpenSvg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>`;
+
+        const eyeClosedSvg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>`;
+
+        // Auto-formatting Phone: 3XX-XXXXXXX
+        phoneInput.addEventListener('input', function () {
+            let val = this.value.replace(/\D/g, '');
+            if (val.startsWith('0')) {
+                val = val.substring(1);
+            }
+            if (val.length > 3) {
+                val = val.substring(0, 3) + '-' + val.substring(3, 10);
+            }
+            this.value = val;
+            clearError(this, phoneError);
+        });
+
+        // Auto-formatting CNIC: XXXXX-XXXXXXX-X
+        cnicInput.addEventListener('input', function () {
+            let val = this.value.replace(/\D/g, '');
+            if (val.length > 5 && val.length <= 12) {
+                val = val.substring(0, 5) + '-' + val.substring(5);
+            } else if (val.length > 12) {
+                val = val.substring(0, 5) + '-' + val.substring(5, 12) + '-' + val.substring(12, 13);
+            }
+            this.value = val;
+            clearError(this, cnicError);
+        });
+
+        // Toggle Password Visibility Eye Icon (Realistic)
+        function toggleEye(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.innerHTML = eyeClosedSvg;
+            } else {
+                input.type = "password";
+                icon.innerHTML = eyeOpenSvg;
+            }
+        }
+
+        document.getElementById('togglePassword').addEventListener('click', () => toggleEye('password', 'togglePassword'));
+        document.getElementById('toggleConfirmPassword').addEventListener('click', () => toggleEye('confirmPassword', 'toggleConfirmPassword'));
+
+        // Password Sensitivity / Strength Indicator
+        passwordInput.addEventListener('input', function () {
+            const val = this.value;
+            const container = document.getElementById('strengthContainer');
+            const bar1 = document.getElementById('bar1');
+            const bar2 = document.getElementById('bar2');
+            const bar3 = document.getElementById('bar3');
+            const text = document.getElementById('strengthText');
+
+            clearError(this, passwordError);
+
+            if (val.length > 0) {
+                container.classList.add('visible');
+            } else {
+                container.classList.remove('visible');
+                return;
+            }
+
+            // Calculate strength
+            let strength = 0;
+            const hasLength = val.length >= 8;
+            const hasLetter = /[a-zA-Z]/.test(val);
+            const hasNumber = /[0-9]/.test(val);
+            const hasSpecial = /[^A-Za-z0-9]/.test(val);
+
+            if (hasLength) strength++;
+            if (hasLetter) strength++;
+            if (hasNumber) strength++;
+            if (hasSpecial) strength++;
+
+            // Reset all bars to empty
+            bar1.style.background = 'rgba(255, 255, 255, 0.1)';
+            bar2.style.background = 'rgba(255, 255, 255, 0.1)';
+            bar3.style.background = 'rgba(255, 255, 255, 0.1)';
+
+            if (strength <= 2) {
+                bar1.style.background = 'var(--error-color)';
+                text.textContent = 'Weak';
+                text.style.color = 'var(--error-color)';
+            } else if (strength === 3) {
+                bar1.style.background = 'var(--warning-color)';
+                bar2.style.background = 'var(--warning-color)';
+                text.textContent = 'Normal';
+                text.style.color = 'var(--warning-color)';
+            } else if (strength === 4) {
+                bar1.style.background = 'var(--success-color)';
+                bar2.style.background = 'var(--success-color)';
+                bar3.style.background = 'var(--success-color)';
+                text.textContent = 'Strong';
+                text.style.color = 'var(--success-color)';
+            }
+        });
+
+        // Clear error highlights when user types in other fields
+        nameInput.addEventListener('input', function () { clearError(this, nameError); });
+        emailInput.addEventListener('input', function () { clearError(this, emailError); });
+        confirmPasswordInput.addEventListener('input', function () { clearError(this, confirmPasswordError); });
+
+        // Email Real-time Validation
+        emailInput.addEventListener('blur', function () {
+            const emailVal = this.value.trim();
+            if (emailVal && emailRegex.test(emailVal)) {
+                fetch(`${API_URL}/check-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal })
+                })
+                .then(res => res.json().then(body => ({ status: res.status, body })))
+                .then(({ status, body }) => {
+                    if (status !== 200) {
+                        showError(emailInput, emailError, body.error || 'Invalid email address');
+                    }
+                })
+                .catch(err => console.error('Email check failed', err));
+            } else if (emailVal && !emailRegex.test(emailVal)) {
+                showError(emailInput, emailError, 'Must be a valid email address');
+            }
+        });
+
+        // Utility clear error
+        function clearError(input, errorEl) {
+            input.classList.remove('error');
+            errorEl.classList.remove('visible');
+        }
+
+        // Utility show error
+        function showError(input, errorEl, msg) {
+            input.classList.add('error');
+            errorEl.textContent = msg;
+            errorEl.classList.add('visible');
+            void input.offsetWidth;
+        }
+
+        // Form Submit handler
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            let isValid = true;
+
+            // 1. Name Validation
+            const nameVal = nameInput.value.trim();
+            if (!nameVal) {
+                showError(nameInput, nameError, 'Please fill the field');
+                isValid = false;
+            } else if (!nameRegex.test(nameVal)) {
+                showError(nameInput, nameError, 'Please enter correct format (letters only)');
+                isValid = false;
+            }
+
+            // 2. Phone Validation
+            const phoneVal = phoneInput.value.trim();
+            if (!phoneVal) {
+                showError(phoneInput, phoneError, 'Please fill the field');
+                isValid = false;
+            } else if (!phoneRegex.test(phoneVal)) {
+                showError(phoneInput, phoneError, 'Please enter correct format (e.g. 300-1234567)');
+                isValid = false;
+            }
+
+            // 3. Email Validation
+            const emailVal = emailInput.value.trim();
+            if (!emailVal) {
+                showError(emailInput, emailError, 'Please enter your email.');
+                isValid = false;
+            } else if (!emailRegex.test(emailVal)) {
+                showError(emailInput, emailError, 'Must be a valid email address');
+                isValid = false;
+            }
+
+            // 4. CNIC Validation
+            const cnicVal = cnicInput.value.trim();
+            if (!cnicVal) {
+                showError(cnicInput, cnicError, 'Please fill the field');
+                isValid = false;
+            } else if (!cnicRegex.test(cnicVal)) {
+                showError(cnicInput, cnicError, 'Please enter correct format (XXXXX-XXXXXXX-X)');
+                isValid = false;
+            }
+
+            // 5. Password Validation
+            const passVal = passwordInput.value;
+            if (!passVal) {
+                showError(passwordInput, passwordError, 'Please fill the field');
+                isValid = false;
+            } else if (passVal.length < 8 || !/[a-zA-Z]/.test(passVal) || !/[0-9]/.test(passVal) || !/[^A-Za-z0-9]/.test(passVal)) {
+                showError(passwordInput, passwordError, 'Must have 8+ chars, 1 letter, 1 number, 1 special character');
+                isValid = false;
+            }
+
+            // 6. Confirm Password Validation
+            const confPassVal = confirmPasswordInput.value;
+            if (!confPassVal) {
+                showError(confirmPasswordInput, confirmPasswordError, 'Please fill the field');
+                isValid = false;
+            } else if (confPassVal !== passVal) {
+                showError(confirmPasswordInput, confirmPasswordError, 'Passwords do not match');
+                isValid = false;
+            }
+
+            // If completely valid, trigger Send OTP API
+            if (isValid) {
+                const registerBtn = document.getElementById('registerBtn');
+                const originalBtnText = registerBtn.innerHTML;
+                registerBtn.innerHTML = '<span class="loading-spinner"></span> Sending OTP...';
+                registerBtn.disabled = true;
+
+                fetch(`${API_URL}/send-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal, phone: phoneVal, cnic: cnicVal })
+                })
+                .then(async response => {
+                    const text = await response.text();
+                    let body = {};
+                    try {
+                        body = text ? JSON.parse(text) : {};
+                    } catch (err) {
+                        body = { error: 'Invalid response format from server.' };
+                    }
+                    return { status: response.status, body };
+                })
+                .then(({ status, body }) => {
+                    registerBtn.innerHTML = originalBtnText;
+                    registerBtn.disabled = false;
+
+                    if (status === 200) {
+                        modalEmailText.textContent = `An OTP has been sent to ${emailVal}. Please enter it below to complete registration.`;
+                        otpModal.classList.add('active');
+                        modalOtpInput.value = '';
+                        modalOtpInput.focus();
+                    } else {
+                        if (body.field === 'phone') {
+                            showError(phoneInput, phoneError, body.error);
+                        } else if (body.field === 'cnic') {
+                            showError(cnicInput, cnicError, body.error);
+                        } else {
+                            showError(emailInput, emailError, body.error || 'Failed to send OTP. Please check your email.');
+                        }
+                    }
+                })
+                .catch(err => {
+                    registerBtn.innerHTML = originalBtnText;
+                    registerBtn.disabled = false;
+                    showError(emailInput, emailError, 'Network error. Please try again.');
+                });
+            }
+        });
+
+        // OTP Modal Verification Logic
+        modalOtpInput.addEventListener('input', function () {
+            this.classList.remove('error');
+            modalOtpError.classList.remove('visible');
+            // Force numbers only
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        modalVerifyBtn.addEventListener('click', function () {
+            const val = modalOtpInput.value.trim();
+            if (val.length === 6) {
+                // Submit to backend
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
+                this.disabled = true;
+                modalOtpInput.disabled = true;
+
+                fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fullName: nameInput.value.trim(),
+                        phone: phoneInput.value.trim(),
+                        cnic: cnicInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        role: 'customer',
+                        password: passwordInput.value,
+                        otp: val
+                    })
+                })
+                .then(async response => {
+                    const text = await response.text();
+                    let body = {};
+                    try {
+                        body = text ? JSON.parse(text) : {};
+                    } catch (err) {
+                        body = { error: 'Invalid response format from server.' };
+                    }
+                    return { status: response.status, body };
+                })
+                .then(({ status, body }) => {
+                    if (status === 201) {
+                        // Store the JWT token for auto-login
+                        localStorage.setItem('servein_token', body.token);
+
+                        this.innerHTML = '✔ Success!';
+                        this.style.background = 'var(--success-color)';
+                        this.style.borderColor = 'var(--success-color)';
+                        this.style.boxShadow = '0 10px 25px rgba(16, 185, 129, 0.4)';
+                        
+                        setTimeout(() => {
+                            if (body.role === 'provider') {
+                                window.location.href = 'provider_dashboard.html';
+                            } else {
+                                window.location.href = 'dashboard.html';
+                            }
+                        }, 1500);
+                    } else {
+                        throw new Error(body.error || 'Registration failed');
+                    }
+                })
+                .catch(err => {
+                    this.innerHTML = 'Try Again';
+                    this.disabled = false;
+                    modalOtpInput.disabled = false;
+                    modalOtpInput.classList.add('error');
+                    modalOtpError.textContent = err.message;
+                    modalOtpError.classList.add('visible');
+                });
+            } else {
+                modalOtpInput.classList.add('error');
+                modalOtpError.textContent = 'Invalid OTP. Please enter exactly 6 digits.';
+                modalOtpError.classList.add('visible');
+            }
+        });
+
+        // Close modal if user clicks outside of it (optional enhancement)
+        otpModal.addEventListener('click', function (e) {
+            if (e.target === this && !modalVerifyBtn.disabled) {
+                this.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ServeIN</title>
+    <meta name="description" content="Sign in to your ServeIN account.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark Blue & Black Theme */
+            --navy-blue: #0A0E17;
+            /* Very dark navy */
+            --royal-blue: #0E1A35;
+            /* Deep dark blue */
+            --bright-blue: #2563EB;
+            /* Solid blue for accents */
+            --mid-blue: #1E3A8A;
+            /* Darker blue */
+            --dark-bg: #000000;
+            /* True black */
+            --error-color: #EF4444;
+            /* Red */
+            --text-main: #F8FAFC;
+            /* White-ish for text */
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            /* Black fading into deep dark blue */
+            background: radial-gradient(circle at 50% 50%, var(--royal-blue) 0%, var(--navy-blue) 60%, var(--dark-bg) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 3D Animated Grid Background to attract audience */
+        .background-grid {
+            position: fixed;
+            width: 200vw;
+            height: 200vh;
+            top: -50vh;
+            left: -50vw;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(600px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 15s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: perspective(600px) rotateX(60deg) translateY(0) translateZ(-200px);
+            }
+
+            100% {
+                transform: perspective(600px) rotateX(60deg) translateY(60px) translateZ(-200px);
+            }
+        }
+
+        /* Floating Glowing Particles */
+        .shape {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 10s infinite ease-in-out alternate;
+            z-index: 0;
+        }
+
+        .shape-1 {
+            width: 350px;
+            height: 350px;
+            background: var(--bright-blue);
+            top: 15%;
+            left: 20%;
+            animation-duration: 12s;
+        }
+
+        .shape-2 {
+            width: 450px;
+            height: 450px;
+            background: var(--mid-blue);
+            bottom: 15%;
+            right: 20%;
+            animation-duration: 16s;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(40px, -20px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-20px, 40px) scale(0.9);
+            }
+        }
+
+        /* Glassmorphism Login Container with Animated Border */
+        .login-container {
+            position: relative;
+            background: rgba(10, 14, 23, 0.85);
+            /* Deep translucent black/navy */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 420px;
+            z-index: 1;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: dropIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(-40px) scale(0.95);
+        }
+
+        /* Animated glowing border */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--bright-blue), var(--mid-blue), transparent, transparent);
+            z-index: -1;
+            border-radius: 26px;
+            background-size: 400% 400%;
+            animation: borderGlow 8s ease infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes borderGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes dropIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .login-header h1 {
+            color: var(--text-main);
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-shadow: 0 0 15px rgba(37, 99, 235, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 26px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: var(--text-main);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Focus Animation */
+        .input-group input:focus {
+            border-color: var(--bright-blue);
+            background: rgba(37, 99, 235, 0.05);
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .input-group input.error {
+            border-color: var(--error-color);
+            background: rgba(239, 68, 68, 0.05);
+            animation: shakeError 0.4s ease-in-out;
+        }
+
+        @keyframes shakeError {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            50% {
+                transform: translateX(6px);
+            }
+
+            75% {
+                transform: translateX(-6px);
+            }
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 13px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .error-message::before {
+            content: '⚠';
+            font-size: 14px;
+        }
+
+        .error-message.visible {
+            max-height: 24px;
+            opacity: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 35px;
+        }
+
+        .forgot-password {
+            color: var(--bright-blue);
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        /* Glow on hover */
+        .forgot-password:hover {
+            color: var(--text-main);
+            text-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(90deg, var(--mid-blue), var(--bright-blue), var(--mid-blue));
+            background-size: 200% auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Button Gradient Hover */
+        .login-btn:hover {
+            background-position: right center;
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .login-btn:active {
+            transform: translateY(1px);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .register-link a {
+            color: var(--bright-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: var(--text-main);
+            text-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
+        }
+
+        /* Password Toggle Eye Icon */
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-main);
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--royal-blue);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: var(--text-main);
+        }
+
+        .modal-content p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .modal-step {
+            display: none;
+        }
+
+        .modal-step.active {
+            display: block;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .btn-primary {
+            background: var(--bright-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--mid-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Password Strength UI */
+        .strength-container {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .strength-container.visible {
+            display: block;
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 4px;
+            height: 4px;
+        }
+
+        .bar {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 480px), (max-height: 640px) {
+            body {
+                align-items: flex-start;
+                padding: 40px 20px;
+                overflow-y: auto;
+            }
+            .modal-overlay {
+                align-items: flex-start !important;
+                overflow-y: auto !important;
+                padding: 40px 10px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            .login-header {
+                margin-bottom: 30px;
+            }
+            .login-header h1 {
+                font-size: 28px;
+            }
+            .login-btn {
+                padding: 15px;
+                font-size: 15px;
+            }
+            .modal-content {
+                width: 90% !important;
+                padding: 25px 20px;
+            }
+            .modal-content h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 3D Animated Grid & Glowing Orbs -->
+    <div class="background-grid"></div>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+
+    <!-- Login Form Container -->
+    <div class="login-container">
+        <div class="login-header">
+            <h1>ServeIN</h1>
+            <p>Sign in to continue to your account</p>
+        </div>
+
+        <form id="loginForm" novalidate>
+            <!-- Email Field -->
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter Your Email" autocomplete="username">
+                <div class="error-message" id="emailError">Please enter a valid email address.</div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder="Enter Password"
+                        autocomplete="current-password">
+                    <span class="toggle-password" id="togglePassword">
+                        <svg class="eye-icon" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
+                <div class="error-message" id="passwordError">Please enter your password.</div>
+            </div>
+
+            <!-- Form Actions (Forgot Password) -->
+            <div class="form-actions">
+                <a href="#forgot-password" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+
+            <!-- Register Link -->
+            <div class="register-link">
+                Don't have an account? <a href="register.html">Register first</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotModal">
+        <div class="modal-content">
+            <!-- Step 1: Send OTP -->
+            <div id="modalStep1" class="modal-step active">
+                <h2>Forgot Password?</h2>
+                <p>Enter your email address and we'll send you an OTP to reset your password.</p>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="forgotEmail" placeholder="Enter your email">
+                    <div class="error-message" id="forgotEmailError">Please enter a valid email address.</div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn btn-cancel" onclick="closeForgotModal()">Cancel</button>
+                    <button class="modal-btn btn-primary" id="sendOtpBtn">Send OTP</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Verify OTP -->
+            <div id="modalStep2" class="modal-step">
+                <h2>Verify OTP</h2>
+                <p id="otpSentText">We've sent a 6-digit code to your email.</p>
+                <div class="input-group">
+                    <label>Enter OTP</label>
+                    <input type="text" id="resetOtp" placeholder="6-digit code" maxlength="6">
+                    <div class="error-message" id="resetOtpError">Please enter the 6-digit code.</div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn btn-cancel" onclick="closeForgotModal()">Cancel</button>
+                    <button class="modal-btn btn-primary" id="verifyOtpBtn">Verify OTP</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Reset Password -->
+            <div id="modalStep3" class="modal-step">
+                <h2>Reset Password</h2>
+                <p>Enter your new password below.</p>
+                <div class="input-group">
+                    <label>New Password</label>
+                    <div class="password-container">
+                        <input type="password" id="newPassword" placeholder="Minimum 8 characters">
+                        <span class="toggle-password" id="toggleNewPassword">
+                            <svg class="eye-icon" viewBox="0 0 24 24">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                    <!-- Password Strength UI -->
+                    <div class="strength-container" id="resetStrengthContainer" style="margin-top: 8px;">
+                        <div class="strength-bars" style="display: flex; gap: 4px; height: 4px;">
+                            <div class="bar" id="resetBar1"
+                                style="flex: 1; background: rgba(255, 255, 255, 0.1); border-radius: 2px; transition: all 0.3s ease;">
+                            </div>
+                            <div class="bar" id="resetBar2"
+                                style="flex: 1; background: rgba(255, 255, 255, 0.1); border-radius: 2px; transition: all 0.3s ease;">
+                            </div>
+                            <div class="bar" id="resetBar3"
+                                style="flex: 1; background: rgba(255, 255, 255, 0.1); border-radius: 2px; transition: all 0.3s ease;">
+                            </div>
+                        </div>
+                        <div class="strength-text" id="resetStrengthText"
+                            style="font-size: 11px; color: var(--text-muted); text-align: right; margin-top: 4px; font-weight: 600;">
+                            Weak</div>
+                    </div>
+                    <div class="error-message" id="newPasswordError">Must have 8+ chars, 1 letter, 1 number, 1 special
+                        character</div>
+                </div>
+                <div class="input-group">
+                    <label>Confirm New Password</label>
+                    <div class="password-container">
+                        <input type="password" id="confirmNewPassword" placeholder="Confirm password">
+                        <span class="toggle-password" id="toggleConfirmNewPassword">
+                            <svg class="eye-icon" viewBox="0 0 24 24">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="error-message" id="confirmNewPasswordError">Passwords do not match</div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn btn-cancel" onclick="closeForgotModal()">Cancel</button>
+                    <button class="modal-btn btn-primary" id="resetPassBtn">Reset Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Validation & UI Logic -->
+    <script>
+        const API_URL = window.location.port === '3000' ? '/api' : 'http://localhost:3000/api';
+
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const loginBtn = document.getElementById('loginBtn');
+
+            let isValid = true;
+
+            // Reset previous error states
+            emailInput.classList.remove('error');
+            passwordInput.classList.remove('error');
+            emailError.classList.remove('visible');
+            passwordError.classList.remove('visible');
+
+            // Force a reflow to allow the shake animation to replay if clicked multiple times while empty
+            void emailInput.offsetWidth;
+            void passwordInput.offsetWidth;
+
+            // Validate Email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailInput.value.trim()) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'Please enter your email.';
+                emailError.classList.add('visible');
+                isValid = false;
+            } else if (!emailRegex.test(emailInput.value.trim())) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'Must be a valid email address.';
+                emailError.classList.add('visible');
+                isValid = false;
+            }
+
+            // Validate Password
+            if (!passwordInput.value.trim()) {
+                passwordInput.classList.add('error');
+                passwordError.classList.add('visible');
+                isValid = false;
+            }
+
+            // If valid, simulate a login process
+            if (isValid) {
+                const originalText = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<span class="loading-spinner"></span> Signing In...';
+                loginBtn.style.opacity = '0.9';
+                loginBtn.disabled = true;
+                loginBtn.style.cursor = 'not-allowed';
+
+                // Submit to backend
+                fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: emailInput.value.trim(),
+                        password: passwordInput.value
+                    })
+                })
+                    .then(async response => {
+                        const text = await response.text();
+                        let body = {};
+                        try {
+                            body = text ? JSON.parse(text) : {};
+                        } catch (err) {
+                            body = { error: 'Invalid response format from server.' };
+                        }
+                        return { status: response.status, body };
+                    })
+                    .then(({ status, body }) => {
+                        if (status === 200) {
+                            // Store the JWT token
+                            localStorage.setItem('servein_token', body.token);
+                            sessionStorage.removeItem('servein_mode'); // Clear mode override on new login
+
+                            loginBtn.innerHTML = 'Success!';
+                            loginBtn.style.background = 'linear-gradient(90deg, #10B981, #059669)'; // Green success
+                            loginBtn.style.boxShadow = '0 10px 25px rgba(16, 185, 129, 0.3)';
+
+                            // Redirect to dashboard
+                            setTimeout(() => {
+                                if (body.role === 'provider') {
+                                    window.location.href = 'provider_dashboard.html';
+                                } else {
+                                    window.location.href = 'dashboard.html';
+                                }
+                            }, 1000);
+                        } else {
+                            throw new Error(body.error || 'Login failed');
+                        }
+                    })
+                    .catch(err => {
+                        loginBtn.innerHTML = originalText;
+                        loginBtn.style.opacity = '1';
+                        loginBtn.disabled = false;
+                        loginBtn.style.cursor = 'pointer';
+
+                        passwordInput.classList.add('error');
+                        passwordError.textContent = err.message;
+                        passwordError.classList.add('visible');
+                    });
+            }
+        });
+
+        // Real-time validation clearance on typing
+        document.getElementById('email').addEventListener('input', function () {
+            if (this.value.trim()) {
+                this.classList.remove('error');
+                document.getElementById('emailError').classList.remove('visible');
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function () {
+            if (this.value.trim()) {
+                this.classList.remove('error');
+                document.getElementById('passwordError').classList.remove('visible');
+            }
+        });
+
+        // --- New Features Logic ---
+
+        // 1. Password Toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.style.color = type === 'text' ? 'var(--bright-blue)' : 'var(--text-muted)';
+        });
+
+        function togglePass(id) {
+            const el = document.getElementById(id);
+            const type = el.getAttribute('type') === 'password' ? 'text' : 'password';
+            el.setAttribute('type', type);
+        }
+
+        // 2. Forgot Password Modal Logic
+        const forgotLink = document.querySelector('.forgot-password');
+        const forgotModal = document.getElementById('forgotModal');
+        const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+        const resetPassBtn = document.getElementById('resetPassBtn');
+
+        const emailInput = document.getElementById('email');
+        const emailError = document.getElementById('emailError');
+
+        const resetOtp = document.getElementById('resetOtp');
+        const resetOtpError = document.getElementById('resetOtpError');
+        const newPassword = document.getElementById('newPassword');
+        const newPasswordError = document.getElementById('newPasswordError');
+        const confirmNewPassword = document.getElementById('confirmNewPassword');
+        const confirmNewPasswordError = document.getElementById('confirmNewPasswordError');
+
+        const resetStrengthContainer = document.getElementById('resetStrengthContainer');
+        const resetBar1 = document.getElementById('resetBar1');
+        const resetBar2 = document.getElementById('resetBar2');
+        const resetBar3 = document.getElementById('resetBar3');
+        const resetStrengthText = document.getElementById('resetStrengthText');
+
+        let resetEmail = ''; // Globally stored email for forgot-password session
+
+        // Toggle Eye Icons in Modal
+        document.getElementById('toggleNewPassword').addEventListener('click', function () {
+            const type = newPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            newPassword.setAttribute('type', type);
+            this.style.color = type === 'text' ? 'var(--bright-blue)' : 'var(--text-muted)';
+        });
+
+        document.getElementById('toggleConfirmNewPassword').addEventListener('click', function () {
+            const type = confirmNewPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmNewPassword.setAttribute('type', type);
+            this.style.color = type === 'text' ? 'var(--bright-blue)' : 'var(--text-muted)';
+        });
+
+        // Toggle Visibility Helpers
+        function showStep(stepNum) {
+            document.getElementById('modalStep1').classList.remove('active');
+            document.getElementById('modalStep2').classList.remove('active');
+            document.getElementById('modalStep3').classList.remove('active');
+            document.getElementById(`modalStep${stepNum}`).classList.add('active');
+        }
+
+        // Open Modal and automatically send OTP to the email entered on the login screen
+        forgotLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const email = emailInput.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!email) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'Please enter your email first to receive OTP.';
+                emailError.classList.add('visible');
+                emailInput.focus();
+                return;
+            } else if (!emailRegex.test(email)) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'Must be a valid email address.';
+                emailError.classList.add('visible');
+                emailInput.focus();
+                return;
+            }
+
+            resetEmail = email; // Store the email address
+
+            // Reset inputs and display validation states
+            resetOtp.value = '';
+            newPassword.value = '';
+            confirmNewPassword.value = '';
+
+            resetOtp.classList.remove('error');
+            newPassword.classList.remove('error');
+            confirmNewPassword.classList.remove('error');
+
+            resetOtpError.classList.remove('visible');
+            newPasswordError.classList.remove('visible');
+            confirmNewPasswordError.classList.remove('visible');
+            resetStrengthContainer.classList.remove('visible');
+
+            // Instantly open the modal to Step 2 (Verify OTP)
+            forgotModal.classList.add('active');
+            showStep(2);
+
+            // Set temporary loading message
+            document.getElementById('otpSentText').innerHTML = `<span class="loading-spinner"></span> Sending OTP to <strong style="color: var(--bright-blue);">${resetEmail}</strong>...`;
+            verifyOtpBtn.disabled = true;
+
+            // Trigger OTP delivery in background
+            try {
+                const res = await fetch(`${API_URL}/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: resetEmail })
+                });
+
+                const text = await res.text();
+                let data = {};
+                try {
+                    data = text ? JSON.parse(text) : {};
+                } catch (e) {
+                    throw new Error('Server encountered an error. Please try again later.');
+                }
+
+                if (res.ok) {
+                    document.getElementById('otpSentText').innerHTML = `We've sent a 6-digit code to <strong style="color: var(--bright-blue);">${resetEmail}</strong>.`;
+                    verifyOtpBtn.disabled = false;
+                } else {
+                    document.getElementById('otpSentText').textContent = data.error || 'Failed to send OTP.';
+                }
+            } catch (err) {
+                document.getElementById('otpSentText').textContent = err.message || 'Network error sending OTP. Please try again.';
+            }
+        });
+
+        function closeForgotModal() {
+            forgotModal.classList.remove('active');
+        }
+
+        // Realtime Clear Errors
+        resetOtp.addEventListener('input', function () {
+            resetOtp.classList.remove('error');
+            resetOtpError.classList.remove('visible');
+            this.value = this.value.replace(/[^0-9]/g, ''); // Force numeric
+        });
+
+        newPassword.addEventListener('input', function () {
+            newPassword.classList.remove('error');
+            newPasswordError.classList.remove('visible');
+
+            const val = this.value;
+            if (val.length > 0) {
+                resetStrengthContainer.classList.add('visible');
+            } else {
+                resetStrengthContainer.classList.remove('visible');
+                return;
+            }
+
+            // Calculate strength
+            let strength = 0;
+            const hasLength = val.length >= 8;
+            const hasLetter = /[a-zA-Z]/.test(val);
+            const hasNumber = /[0-9]/.test(val);
+            const hasSpecial = /[^A-Za-z0-9]/.test(val);
+
+            if (hasLength) strength++;
+            if (hasLetter) strength++;
+            if (hasNumber) strength++;
+            if (hasSpecial) strength++;
+
+            // Reset strength bars
+            resetBar1.style.background = 'rgba(255, 255, 255, 0.1)';
+            resetBar2.style.background = 'rgba(255, 255, 255, 0.1)';
+            resetBar3.style.background = 'rgba(255, 255, 255, 0.1)';
+
+            if (strength <= 2) {
+                resetBar1.style.background = 'var(--error-color)';
+                resetStrengthText.textContent = 'Weak';
+                resetStrengthText.style.color = 'var(--error-color)';
+            } else if (strength === 3) {
+                resetBar1.style.background = 'var(--warning-color)';
+                resetBar2.style.background = 'var(--warning-color)';
+                resetStrengthText.textContent = 'Normal';
+                resetStrengthText.style.color = 'var(--warning-color)';
+            } else if (strength === 4) {
+                resetBar1.style.background = 'var(--success-color)';
+                resetBar2.style.background = 'var(--success-color)';
+                resetBar3.style.background = 'var(--success-color)';
+                resetStrengthText.textContent = 'Strong';
+                resetStrengthText.style.color = 'var(--success-color)';
+            }
+        });
+
+        confirmNewPassword.addEventListener('input', () => {
+            confirmNewPassword.classList.remove('error');
+            confirmNewPasswordError.classList.remove('visible');
+        });
+
+        // Step 2: Verify OTP
+        verifyOtpBtn.addEventListener('click', async () => {
+            const otp = resetOtp.value.trim();
+
+            if (!otp || otp.length !== 6) {
+                resetOtp.classList.add('error');
+                resetOtpError.textContent = 'Please enter exactly 6 digits.';
+                resetOtpError.classList.add('visible');
+                return;
+            }
+
+            verifyOtpBtn.disabled = true;
+            verifyOtpBtn.textContent = 'Verifying...';
+
+            try {
+                const res = await fetch(`${API_URL}/verify-reset-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: resetEmail, otp })
+                });
+
+                const text = await res.text();
+                let data = {};
+                try {
+                    data = text ? JSON.parse(text) : {};
+                } catch (e) {
+                    throw new Error('Verification failed. Please try again.');
+                }
+
+                if (res.ok) {
+                    showStep(3);
+                } else {
+                    resetOtp.classList.add('error');
+                    resetOtpError.textContent = data.error || 'Invalid or expired OTP.';
+                    resetOtpError.classList.add('visible');
+                }
+            } catch (err) {
+                resetOtp.classList.add('error');
+                resetOtpError.textContent = err.message || 'Network error. Try again.';
+                resetOtpError.classList.add('visible');
+            } finally {
+                verifyOtpBtn.disabled = false;
+                verifyOtpBtn.textContent = 'Verify OTP';
+            }
+        });
+
+        // Step 3: Reset Password
+        resetPassBtn.addEventListener('click', async () => {
+            const otp = resetOtp.value.trim();
+            const newPass = newPassword.value;
+            const confPass = confirmNewPassword.value;
+
+            let isValid = true;
+
+            // Validate New Password (same as register)
+            if (!newPass) {
+                newPassword.classList.add('error');
+                newPasswordError.textContent = 'Please fill the field.';
+                newPasswordError.classList.add('visible');
+                isValid = false;
+            } else if (newPass.length < 8 || !/[a-zA-Z]/.test(newPass) || !/[0-9]/.test(newPass) || !/[^A-Za-z0-9]/.test(newPass)) {
+                newPassword.classList.add('error');
+                newPasswordError.textContent = 'Must have 8+ chars, 1 letter, 1 number, 1 special character';
+                newPasswordError.classList.add('visible');
+                isValid = false;
+            }
+
+            // Validate Confirm Password
+            if (!confPass) {
+                confirmNewPassword.classList.add('error');
+                confirmNewPasswordError.textContent = 'Please fill the field.';
+                confirmNewPasswordError.classList.add('visible');
+                isValid = false;
+            } else if (confPass !== newPass) {
+                confirmNewPassword.classList.add('error');
+                confirmNewPasswordError.textContent = 'Passwords do not match';
+                confirmNewPasswordError.classList.add('visible');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            resetPassBtn.disabled = true;
+            resetPassBtn.textContent = 'Resetting...';
+
+            try {
+                const res = await fetch(`${API_URL}/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: resetEmail, otp, newPassword: newPass })
+                });
+
+                const text = await res.text();
+                let data = {};
+                try {
+                    data = text ? JSON.parse(text) : {};
+                } catch (e) {
+                    throw new Error('Reset failed. Please try again later.');
+                }
+
+                if (res.ok) {
+                    alert('Password reset successful! You can now login.');
+                    closeForgotModal();
+                } else {
+                    newPassword.classList.add('error');
+                    newPasswordError.textContent = data.error || 'Failed to reset password.';
+                    newPasswordError.classList.add('visible');
+                }
+            } catch (err) {
+                newPassword.classList.add('error');
+                newPasswordError.textContent = err.message || 'Network error. Try again.';
+                newPasswordError.classList.add('visible');
+            } finally {
+                resetPassBtn.disabled = false;
+                resetPassBtn.textContent = 'Reset Password';
+            }
+        });
+    </script>
+</body>
+
+</html>
