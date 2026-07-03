@@ -32,7 +32,7 @@ const otpStore = new Map(); // stores email -> { otp, expiresAt }
 // Serve static HTML files from the current directory
 app.use(express.static(__dirname));
 app.use('/uploads', express.static(uploadDir));
-
+const DB_PORT = process.env.DB_PORT || 3306;
 const PORT = process.env.PORT || 3000;
 const DB_HOST = process.env.DB_HOST || 'localhost';
 const DB_USER = process.env.DB_USER || 'root';
@@ -45,26 +45,27 @@ let pool;
 async function initDB() {
     try {
         // 1. Connect without database to create it if it doesn't exist
-        const connection = await mysql.createConnection({
-            host: DB_HOST,
-            user: DB_USER,
-            password: DB_PASSWORD
-        });
+       const connection = await mysql.createConnection({
+    host: DB_HOST,
+    port: DB_PORT,
+    user: DB_USER,
+    password: DB_PASSWORD
+});
 
         await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;`);
         await connection.end();
 
         // 2. Connect to the actual database using a pool
         pool = mysql.createPool({
-            host: DB_HOST,
-            user: DB_USER,
-            password: DB_PASSWORD,
-            database: DB_NAME,
-            waitForConnections: true,
-            connectionLimit: 10,
-            queueLimit: 0
-        });
-
+                 host: DB_HOST,
+               port: DB_PORT,
+              user: DB_USER,
+               password: DB_PASSWORD,
+               database: DB_NAME,
+              waitForConnections: true,
+             connectionLimit: 10,
+                 queueLimit: 0
+});
         // 3. Create Users table if it doesn't exist
         const createTableQuery = `
             CREATE TABLE IF NOT EXISTS users (
